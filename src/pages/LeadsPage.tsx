@@ -3,14 +3,20 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { PageHeader } from "@/components/DashboardWidgets";
 import { StatusBadge, ScoreBadge } from "@/components/StatusBadge";
 import { leads as initialLeads, Lead, LeadStatus } from "@/data/mockData";
-import { Search, Upload, Filter, Plus } from "lucide-react";
+import { Search, Upload, Filter, Plus, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { AddLeadDialog } from "@/components/AddLeadDialog";
+import { CSVImportDialog } from "@/components/CSVImportDialog";
+import { toast } from "sonner";
 
 export default function LeadsPage() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<LeadStatus | 'all'>('all');
-  const [leadsList] = useState<Lead[]>(initialLeads);
+  const [leadsList, setLeadsList] = useState<Lead[]>(initialLeads);
+  const [addOpen, setAddOpen] = useState(false);
+  const [csvOpen, setCsvOpen] = useState(false);
+  const [editLead, setEditLead] = useState<Lead | null>(null);
 
   const filtered = leadsList.filter(l => {
     const matchesSearch = l.name.toLowerCase().includes(search.toLowerCase()) || l.business.toLowerCase().includes(search.toLowerCase());
@@ -20,11 +26,27 @@ export default function LeadsPage() {
 
   const statuses: (LeadStatus | 'all')[] = ['all', 'new', 'contacted', 'follow-up', 'interested', 'closed'];
 
+  const handleAddLead = (lead: Lead) => {
+    setLeadsList(prev => [lead, ...prev]);
+    toast.success(`${lead.name} added to leads`);
+  };
+
+  const handleUpdateLead = (lead: Lead) => {
+    setLeadsList(prev => prev.map(l => l.id === lead.id ? lead : l));
+    setEditLead(null);
+    toast.success(`${lead.name} updated`);
+  };
+
+  const handleImport = (imported: Lead[]) => {
+    setLeadsList(prev => [...imported, ...prev]);
+    toast.success(`${imported.length} leads imported successfully`);
+  };
+
   return (
     <DashboardLayout>
       <PageHeader title="Leads" subtitle={`${leadsList.length} total leads in your pipeline`}>
-        <Button variant="outline" size="sm" className="gap-2"><Upload className="w-4 h-4" /> Import CSV</Button>
-        <Button size="sm" className="gap-2"><Plus className="w-4 h-4" /> Add Lead</Button>
+        <Button variant="outline" size="sm" className="gap-2" onClick={() => setCsvOpen(true)}><Upload className="w-4 h-4" /> Import CSV</Button>
+        <Button size="sm" className="gap-2" onClick={() => setAddOpen(true)}><Plus className="w-4 h-4" /> Add Lead</Button>
       </PageHeader>
 
       <div className="glass rounded-xl p-4 mb-6">
@@ -55,11 +77,12 @@ export default function LeadsPage() {
                 <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Score</th>
                 <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
                 <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider hidden lg:table-cell">Tags</th>
+                <th className="px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider w-10"></th>
               </tr>
             </thead>
             <tbody>
               {filtered.map((lead, i) => (
-                <tr key={lead.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors animate-slide-in cursor-pointer" style={{ animationDelay: `${i * 40}ms` }}>
+                <tr key={lead.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors animate-slide-in" style={{ animationDelay: `${i * 40}ms` }}>
                   <td className="px-4 py-3">
                     <div>
                       <p className="font-medium text-sm">{lead.name}</p>
@@ -77,6 +100,11 @@ export default function LeadsPage() {
                       ))}
                     </div>
                   </td>
+                  <td className="px-4 py-3">
+                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setEditLead(lead)}>
+                      <Pencil className="w-3.5 h-3.5" />
+                    </Button>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -89,6 +117,9 @@ export default function LeadsPage() {
           </div>
         )}
       </div>
+
+      <AddLeadDialog open={addOpen || !!editLead} onOpenChange={(v) => { if (!v) { setAddOpen(false); setEditLead(null); } else setAddOpen(true); }} onAdd={handleAddLead} editLead={editLead} onUpdate={handleUpdateLead} />
+      <CSVImportDialog open={csvOpen} onOpenChange={setCsvOpen} onImport={handleImport} />
     </DashboardLayout>
   );
 }
