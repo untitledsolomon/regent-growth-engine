@@ -1,22 +1,36 @@
 import { useState } from "react";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { PageHeader } from "@/components/DashboardWidgets";
-import { messages, templates } from "@/data/mockData";
-import { MessageSquare, Mail, Send, Clock, CheckCheck, Reply, AlertCircle } from "lucide-react";
+import { messages as initialMessages, templates, Message } from "@/data/mockData";
+import { MessageSquare, Mail, Send, Clock, CheckCheck, Reply, AlertCircle, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ComposeMessageDialog } from "@/components/ComposeMessageDialog";
+import { toast } from "sonner";
 
 const statusIcons = { sent: Send, delivered: CheckCheck, read: CheckCheck, replied: Reply, failed: AlertCircle };
 const statusColors = { sent: 'text-muted-foreground', delivered: 'text-regent-sky', read: 'text-primary', replied: 'text-regent-emerald', failed: 'text-regent-coral' };
 
 export default function MessagesPage() {
   const [tab, setTab] = useState<'history' | 'templates'>('history');
+  const [messagesList, setMessagesList] = useState<Message[]>(initialMessages);
+  const [composeOpen, setComposeOpen] = useState(false);
+
+  const handleSend = (message: Message) => {
+    setMessagesList(prev => [message, ...prev]);
+    toast.success(`Message sent to ${message.leadName}`);
+  };
 
   return (
     <DashboardLayout>
-      <PageHeader title="Messages" subtitle="Track outreach messages and manage templates" />
+      <PageHeader title="Messages" subtitle="Track outreach messages and manage templates">
+        <Button size="sm" className="gap-2" onClick={() => setComposeOpen(true)}>
+          <Plus className="w-4 h-4" /> Compose
+        </Button>
+      </PageHeader>
 
       <div className="flex gap-2 mb-6">
         <button onClick={() => setTab('history')} className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === 'history' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}>
-          Message History
+          Message History ({messagesList.length})
         </button>
         <button onClick={() => setTab('templates')} className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === 'templates' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}>
           Templates
@@ -25,7 +39,7 @@ export default function MessagesPage() {
 
       {tab === 'history' && (
         <div className="space-y-3">
-          {messages.map((msg, i) => {
+          {messagesList.map((msg, i) => {
             const StatusIcon = statusIcons[msg.status];
             return (
               <div key={msg.id} className="glass rounded-xl p-4 hover:shadow-md transition-all animate-slide-in" style={{ animationDelay: `${i * 60}ms` }}>
@@ -77,6 +91,8 @@ export default function MessagesPage() {
           ))}
         </div>
       )}
+
+      <ComposeMessageDialog open={composeOpen} onOpenChange={setComposeOpen} onSend={handleSend} />
     </DashboardLayout>
   );
 }
