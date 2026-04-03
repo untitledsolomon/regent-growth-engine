@@ -1,4 +1,5 @@
 import { NavLink } from "@/components/NavLink";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { 
   LayoutDashboard, Users, Megaphone, GitBranch, BarChart3, 
   MessageSquare, Settings, ChevronLeft, ChevronRight 
@@ -51,7 +52,8 @@ export function AppSidebar() {
         ))}
       </nav>
 
-      <div className="p-3 border-t border-sidebar-border">
+      <div className="p-3 border-t border-sidebar-border space-y-1">
+        <ThemeToggle collapsed={collapsed} />
         <NavLink
           to="/settings"
           className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-all duration-200 text-sm"

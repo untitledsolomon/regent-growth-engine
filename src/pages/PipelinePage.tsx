@@ -3,6 +3,8 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { PageHeader } from "@/components/DashboardWidgets";
 import { ScoreBadge } from "@/components/StatusBadge";
 import { leads as initialLeads, Lead, LeadStatus } from "@/data/mockData";
+import { LeadDetailDrawer } from "@/components/LeadDetailDrawer";
+import { toast } from "sonner";
 
 const stages: { key: LeadStatus; label: string; color: string }[] = [
   { key: 'new', label: 'New', color: 'border-t-regent-sky' },
@@ -15,6 +17,7 @@ const stages: { key: LeadStatus; label: string; color: string }[] = [
 export default function PipelinePage() {
   const [pipelineLeads, setPipelineLeads] = useState<Lead[]>(initialLeads);
   const [draggedLead, setDraggedLead] = useState<string | null>(null);
+  const [detailLead, setDetailLead] = useState<Lead | null>(null);
 
   const handleDragStart = (leadId: string) => setDraggedLead(leadId);
 
@@ -22,6 +25,12 @@ export default function PipelinePage() {
     if (!draggedLead) return;
     setPipelineLeads(prev => prev.map(l => l.id === draggedLead ? { ...l, status: targetStatus } : l));
     setDraggedLead(null);
+    toast.success('Lead moved');
+  };
+
+  const handleStatusChange = (leadId: string, status: LeadStatus) => {
+    setPipelineLeads(prev => prev.map(l => l.id === leadId ? { ...l, status } : l));
+    setDetailLead(prev => prev && prev.id === leadId ? { ...prev, status } : prev);
   };
 
   return (
@@ -50,6 +59,7 @@ export default function PipelinePage() {
                     key={lead.id}
                     draggable
                     onDragStart={() => handleDragStart(lead.id)}
+                    onClick={() => setDetailLead(lead)}
                     className={`p-3 rounded-lg bg-background border border-border/50 cursor-grab active:cursor-grabbing hover:shadow-md transition-all duration-200 ${draggedLead === lead.id ? 'opacity-50 scale-95' : ''}`}
                   >
                     <p className="font-medium text-sm">{lead.name}</p>
@@ -74,6 +84,13 @@ export default function PipelinePage() {
           );
         })}
       </div>
+
+      <LeadDetailDrawer
+        lead={detailLead}
+        open={!!detailLead}
+        onOpenChange={v => { if (!v) setDetailLead(null); }}
+        onStatusChange={handleStatusChange}
+      />
     </DashboardLayout>
   );
 }

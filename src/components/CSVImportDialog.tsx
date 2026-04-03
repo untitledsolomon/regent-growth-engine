@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Upload, FileText, CheckCircle } from "lucide-react";
+import { Upload, FileText, CheckCircle, Zap } from "lucide-react";
 import { Lead } from "@/data/mockData";
 
 interface CSVImportDialogProps {
@@ -17,7 +17,16 @@ const leadFields = [
   { key: 'business', label: 'Business', required: true },
   { key: 'email', label: 'Email', required: true },
   { key: 'phone', label: 'Phone', required: false },
+  { key: 'linkedinUrl', label: 'LinkedIn URL', required: false },
 ] as const;
+
+const phantombusterPresets: Record<string, string[]> = {
+  name: ['firstName', 'lastName', 'fullName', 'name', 'first_name', 'last_name', 'full_name'],
+  business: ['companyName', 'company', 'company_name', 'organization', 'currentCompany'],
+  email: ['email', 'emailAddress', 'email_address', 'mail'],
+  phone: ['phone', 'phoneNumber', 'phone_number', 'telephone'],
+  linkedinUrl: ['profileUrl', 'linkedin', 'linkedinUrl', 'linkedinProfileUrl', 'linkedin_url', 'profile_url'],
+};
 
 type Step = 'upload' | 'map' | 'preview' | 'done';
 
@@ -27,6 +36,7 @@ export function CSVImportDialog({ open, onOpenChange, onImport }: CSVImportDialo
   const [headers, setHeaders] = useState<string[]>([]);
   const [mapping, setMapping] = useState<Record<string, string>>({});
   const [importedCount, setImportedCount] = useState(0);
+  const [isPBFormat, setIsPBFormat] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const reset = () => {
@@ -35,6 +45,7 @@ export function CSVImportDialog({ open, onOpenChange, onImport }: CSVImportDialo
     setHeaders([]);
     setMapping({});
     setImportedCount(0);
+    setIsPBFormat(false);
   };
 
   const parseCSV = (text: string): string[][] => {
@@ -52,6 +63,40 @@ export function CSVImportDialog({ open, onOpenChange, onImport }: CSVImportDialo
     });
   };
 
+  const autoMapHeaders = (csvHeaders: string[]) => {
+    const autoMap: Record<string, string> = {};
+    for (const field of leadFields) {
+      // Check PhantomBuster presets first
+      const pbMatch = phantombusterPresets[field.key]?.find(preset =>
+        csvHeaders.some(h => h.toLowerCase() === preset.toLowerCase())
+      );
+      if (pbMatch) {
+        const exactHeader = csvHeaders.find(h => h.toLowerCase() === pbMatch.toLowerCase());
+        if (exactHeader) {
+          autoMap[field.key] = exactHeader;
+          continue;
+        }
+      }
+      // Fuzzy fallback
+      const match = csvHeaders.find(h =>
+        h.toLowerCase().includes(field.key) ||
+        h.toLowerCase().includes(field.label.toLowerCase())
+      );
+      if (match) autoMap[field.key] = match;
+    }
+
+    // Handle firstName + lastName combo
+    if (!autoMap.name) {
+      const firstNameH = csvHeaders.find(h => ['firstname', 'first_name'].includes(h.toLowerCase()));
+      const lastNameH = csvHeaders.find(h => ['lastname', 'last_name'].includes(h.toLowerCase()));
+      if (firstNameH && lastNameH) {
+        autoMap.name = `${firstNameH}+${lastNameH}`;
+      }
+    }
+
+    return autoMap;
+  };
+
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -60,28 +105,33 @@ export function CSVImportDialog({ open, onOpenChange, onImport }: CSVImportDialo
       const text = ev.target?.result as string;
       const rows = parseCSV(text);
       if (rows.length < 2) return;
-      setHeaders(rows[0]);
+      const csvHeaders = rows[0];
+      setHeaders(csvHeaders);
       setCsvData(rows.slice(1));
-      // Auto-map by fuzzy matching
-      const autoMap: Record<string, string> = {};
-      for (const field of leadFields) {
-        const match = rows[0].find(h =>
-          h.toLowerCase().includes(field.key) ||
-          h.toLowerCase().includes(field.label.toLowerCase())
-        );
-        if (match) autoMap[field.key] = match;
-      }
-      setMapping(autoMap);
+
+      // Detect PhantomBuster format
+      const pbIndicators = ['profileUrl', 'linkedinProfileUrl', 'companyName', 'firstName'];
+      const isPB = pbIndicators.some(ind => csvHeaders.some(h => h.toLowerCase() === ind.toLowerCase()));
+      setIsPBFormat(isPB);
+
+      setMapping(autoMapHeaders(csvHeaders));
       setStep('map');
     };
     reader.readAsText(file);
   };
 
   const handleImport = () => {
-    const leads: Lead[] = csvData.map((row, i) => {
+    const leads: Lead[] = csvData.map((row) => {
       const get = (field: string) => {
         const header = mapping[field];
         if (!header) return '';
+        // Handle combined firstName+lastName
+        if (header.includes('+')) {
+          const [h1, h2] = header.split('+');
+          const i1 = headers.indexOf(h1);
+          const i2 = headers.indexOf(h2);
+          return `${i1 >= 0 ? row[i1] || '' : ''} ${i2 >= 0 ? row[i2] || '' : ''}`.trim();
+        }
         const idx = headers.indexOf(header);
         return idx >= 0 ? row[idx] || '' : '';
       };
@@ -91,10 +141,11 @@ export function CSVImportDialog({ open, onOpenChange, onImport }: CSVImportDialo
         business: get('business'),
         email: get('email'),
         phone: get('phone') || '',
-        source: 'phantombuster' as const,
+        linkedinUrl: get('linkedinUrl') || undefined,
+        source: isPBFormat ? 'phantombuster' as const : 'website' as const,
         score: Math.floor(Math.random() * 40) + 50,
         status: 'new' as const,
-        tags: [],
+        tags: isPBFormat ? ['phantombuster'] : [],
         createdAt: new Date().toISOString().split('T')[0],
       };
     }).filter(l => l.name && l.email);
@@ -132,6 +183,11 @@ export function CSVImportDialog({ open, onOpenChange, onImport }: CSVImportDialo
             <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-muted/50">
               <FileText className="w-4 h-4 text-muted-foreground" />
               <span className="text-sm"><strong>{csvData.length}</strong> rows detected with <strong>{headers.length}</strong> columns</span>
+              {isPBFormat && (
+                <span className="ml-auto inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-regent-emerald/15 text-regent-emerald text-xs font-medium">
+                  <Zap className="w-3 h-3" /> PhantomBuster detected
+                </span>
+              )}
             </div>
             <div className="space-y-3">
               <p className="text-sm font-medium">Map CSV columns to lead fields:</p>
@@ -181,7 +237,7 @@ export function CSVImportDialog({ open, onOpenChange, onImport }: CSVImportDialo
           <div className="py-12 text-center">
             <CheckCircle className="w-12 h-12 mx-auto text-regent-emerald mb-3" />
             <p className="font-display font-semibold text-lg">Import Successful!</p>
-            <p className="text-sm text-muted-foreground mt-1">{importedCount} leads have been imported</p>
+            <p className="text-sm text-muted-foreground mt-1">{importedCount} leads have been imported{isPBFormat ? ' from PhantomBuster' : ''}</p>
           </div>
         )}
 

@@ -1,7 +1,7 @@
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { PageHeader, StatCard } from "@/components/DashboardWidgets";
-import { leads, dailyMetrics, campaigns, aiInsights, funnelData } from "@/data/mockData";
-import { Users, Send, MessageSquare, Trophy, TrendingUp, Lightbulb, AlertTriangle, Zap } from "lucide-react";
+import { leads, dailyMetrics, campaigns, aiInsights, funnelData, recentActivities } from "@/data/mockData";
+import { Users, Send, MessageSquare, Trophy, TrendingUp, Lightbulb, AlertTriangle, Zap, Activity, UserPlus, MailCheck, Megaphone, Upload, ToggleRight } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
 
 const totalLeads = leads.length;
@@ -12,6 +12,15 @@ const conversionRate = ((conversions / totalLeads) * 100).toFixed(1);
 
 const insightIcons = { opportunity: Zap, trend: TrendingUp, suggestion: Lightbulb, alert: AlertTriangle };
 const insightColors = { high: 'border-l-regent-coral', medium: 'border-l-regent-gold', low: 'border-l-regent-sky' };
+
+const activityIcons = {
+  lead_added: UserPlus,
+  status_changed: Activity,
+  message_sent: MailCheck,
+  campaign_created: Megaphone,
+  lead_imported: Upload,
+  campaign_toggled: ToggleRight,
+};
 
 export default function DashboardPage() {
   return (
@@ -69,8 +78,8 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="glass rounded-xl p-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div className="lg:col-span-2 glass rounded-xl p-6">
           <h3 className="font-display font-semibold text-lg mb-4">Campaign Performance</h3>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={campaigns.filter(c => c.status !== 'draft')}>
@@ -84,26 +93,54 @@ export default function DashboardPage() {
           </ResponsiveContainer>
         </div>
 
+        {/* Recent Activity */}
         <div className="glass rounded-xl p-6">
           <h3 className="font-display font-semibold text-lg mb-4 flex items-center gap-2">
-            <Zap className="w-5 h-5 text-regent-gold" /> AI Insights
+            <Activity className="w-5 h-5 text-primary" /> Recent Activity
           </h3>
-          <div className="space-y-3">
-            {aiInsights.map((insight, i) => {
-              const Icon = insightIcons[insight.type];
+          <div className="space-y-0">
+            {recentActivities.slice(0, 6).map((activity, i) => {
+              const Icon = activityIcons[activity.type];
               return (
-                <div key={insight.id} className={`p-3 rounded-lg bg-muted/50 border-l-2 ${insightColors[insight.priority]} animate-slide-in`} style={{ animationDelay: `${i * 100}ms` }}>
-                  <div className="flex items-start gap-2">
-                    <Icon className="w-4 h-4 mt-0.5 text-muted-foreground shrink-0" />
-                    <div>
-                      <p className="text-sm font-medium">{insight.title}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">{insight.description}</p>
+                <div key={activity.id} className="flex gap-3 py-2.5 animate-slide-in" style={{ animationDelay: `${i * 80}ms` }}>
+                  <div className="flex flex-col items-center">
+                    <div className="p-1.5 rounded-lg bg-muted">
+                      <Icon className="w-3.5 h-3.5 text-muted-foreground" />
                     </div>
+                    {i < 5 && <div className="w-px flex-1 bg-border mt-1" />}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-medium leading-snug">{activity.description}</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">
+                      {new Date(activity.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                    </p>
                   </div>
                 </div>
               );
             })}
           </div>
+        </div>
+      </div>
+
+      <div className="glass rounded-xl p-6">
+        <h3 className="font-display font-semibold text-lg mb-4 flex items-center gap-2">
+          <Zap className="w-5 h-5 text-regent-gold" /> AI Insights
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {aiInsights.map((insight, i) => {
+            const Icon = insightIcons[insight.type];
+            return (
+              <div key={insight.id} className={`p-3 rounded-lg bg-muted/50 border-l-2 ${insightColors[insight.priority]} animate-slide-in`} style={{ animationDelay: `${i * 100}ms` }}>
+                <div className="flex items-start gap-2">
+                  <Icon className="w-4 h-4 mt-0.5 text-muted-foreground shrink-0" />
+                  <div>
+                    <p className="text-sm font-medium">{insight.title}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{insight.description}</p>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </DashboardLayout>
