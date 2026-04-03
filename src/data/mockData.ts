@@ -15,6 +15,7 @@ export interface Lead {
   tags: string[];
   createdAt: string;
   lastContacted?: string;
+  linkedinUrl?: string;
 }
 
 export interface Campaign {
@@ -50,18 +51,33 @@ export interface DailyMetric {
   conversions: number;
 }
 
+export interface Template {
+  id: string;
+  name: string;
+  channel: 'whatsapp' | 'email' | 'both';
+  body: string;
+}
+
+export interface Activity {
+  id: string;
+  type: 'lead_added' | 'status_changed' | 'message_sent' | 'campaign_created' | 'lead_imported' | 'campaign_toggled';
+  description: string;
+  timestamp: string;
+  meta?: Record<string, string>;
+}
+
 export const leads: Lead[] = [
-  { id: '1', name: 'Sarah Chen', business: 'TechVault Solutions', email: 'sarah@techvault.io', phone: '+1-555-0101', source: 'phantombuster', score: 92, status: 'interested', tags: ['enterprise', 'high-value'], createdAt: '2026-03-15', lastContacted: '2026-03-30' },
-  { id: '2', name: 'Marcus Williams', business: 'GrowthStack Inc', email: 'marcus@growthstack.com', phone: '+1-555-0102', source: 'linkedin', score: 85, status: 'contacted', tags: ['startup', 'series-a'], createdAt: '2026-03-18', lastContacted: '2026-03-28' },
+  { id: '1', name: 'Sarah Chen', business: 'TechVault Solutions', email: 'sarah@techvault.io', phone: '+1-555-0101', source: 'phantombuster', score: 92, status: 'interested', tags: ['enterprise', 'high-value'], createdAt: '2026-03-15', lastContacted: '2026-03-30', linkedinUrl: 'https://linkedin.com/in/sarahchen' },
+  { id: '2', name: 'Marcus Williams', business: 'GrowthStack Inc', email: 'marcus@growthstack.com', phone: '+1-555-0102', source: 'linkedin', score: 85, status: 'contacted', tags: ['startup', 'series-a'], createdAt: '2026-03-18', lastContacted: '2026-03-28', linkedinUrl: 'https://linkedin.com/in/marcuswilliams' },
   { id: '3', name: 'Amara Osei', business: 'BrightPath Digital', email: 'amara@brightpath.co', phone: '+1-555-0103', source: 'referral', score: 78, status: 'follow-up', tags: ['agency', 'mid-market'], createdAt: '2026-03-20', lastContacted: '2026-03-29' },
-  { id: '4', name: 'James Rodriguez', business: 'Apex Ventures', email: 'james@apexventures.com', phone: '+1-555-0104', source: 'phantombuster', score: 95, status: 'closed', tags: ['enterprise', 'high-value', 'won'], createdAt: '2026-03-10', lastContacted: '2026-04-01' },
+  { id: '4', name: 'James Rodriguez', business: 'Apex Ventures', email: 'james@apexventures.com', phone: '+1-555-0104', source: 'phantombuster', score: 95, status: 'closed', tags: ['enterprise', 'high-value', 'won'], createdAt: '2026-03-10', lastContacted: '2026-04-01', linkedinUrl: 'https://linkedin.com/in/jamesrodriguez' },
   { id: '5', name: 'Priya Patel', business: 'NovaBrand Studio', email: 'priya@novabrand.co', phone: '+1-555-0105', source: 'website', score: 70, status: 'new', tags: ['smb'], createdAt: '2026-03-25' },
   { id: '6', name: 'David Kim', business: 'CloudNine SaaS', email: 'david@cloudnine.io', phone: '+1-555-0106', source: 'cold-outreach', score: 65, status: 'new', tags: ['saas', 'startup'], createdAt: '2026-03-26' },
-  { id: '7', name: 'Elena Vasquez', business: 'Meridian Health', email: 'elena@meridianhealth.com', phone: '+1-555-0107', source: 'linkedin', score: 88, status: 'interested', tags: ['healthcare', 'enterprise'], createdAt: '2026-03-12', lastContacted: '2026-03-31' },
-  { id: '8', name: 'Omar Hassan', business: 'FinEdge Capital', email: 'omar@finedge.co', phone: '+1-555-0108', source: 'phantombuster', score: 82, status: 'contacted', tags: ['fintech', 'high-value'], createdAt: '2026-03-19', lastContacted: '2026-03-27' },
+  { id: '7', name: 'Elena Vasquez', business: 'Meridian Health', email: 'elena@meridianhealth.com', phone: '+1-555-0107', source: 'linkedin', score: 88, status: 'interested', tags: ['healthcare', 'enterprise'], createdAt: '2026-03-12', lastContacted: '2026-03-31', linkedinUrl: 'https://linkedin.com/in/elenavasquez' },
+  { id: '8', name: 'Omar Hassan', business: 'FinEdge Capital', email: 'omar@finedge.co', phone: '+1-555-0108', source: 'phantombuster', score: 82, status: 'contacted', tags: ['fintech', 'high-value'], createdAt: '2026-03-19', lastContacted: '2026-03-27', linkedinUrl: 'https://linkedin.com/in/omarhassan' },
   { id: '9', name: 'Lisa Park', business: 'EcoVenture Labs', email: 'lisa@ecoventure.com', phone: '+1-555-0109', source: 'referral', score: 74, status: 'follow-up', tags: ['sustainability'], createdAt: '2026-03-22', lastContacted: '2026-03-30' },
   { id: '10', name: 'Thomas Burke', business: 'Atlas Logistics', email: 'thomas@atlaslog.com', phone: '+1-555-0110', source: 'website', score: 60, status: 'new', tags: ['logistics'], createdAt: '2026-03-28' },
-  { id: '11', name: 'Natasha Romanova', business: 'Stellar AI', email: 'natasha@stellarai.io', phone: '+1-555-0111', source: 'phantombuster', score: 91, status: 'closed', tags: ['ai', 'enterprise', 'won'], createdAt: '2026-03-08', lastContacted: '2026-03-29' },
+  { id: '11', name: 'Natasha Romanova', business: 'Stellar AI', email: 'natasha@stellarai.io', phone: '+1-555-0111', source: 'phantombuster', score: 91, status: 'closed', tags: ['ai', 'enterprise', 'won'], createdAt: '2026-03-08', lastContacted: '2026-03-29', linkedinUrl: 'https://linkedin.com/in/natasharomanova' },
   { id: '12', name: 'Raj Kapoor', business: 'UrbanPulse Media', email: 'raj@urbanpulse.co', phone: '+1-555-0112', source: 'linkedin', score: 77, status: 'contacted', tags: ['media', 'mid-market'], createdAt: '2026-03-21', lastContacted: '2026-03-28' },
 ];
 
@@ -116,10 +132,21 @@ export const aiInsights = [
   { id: '4', type: 'alert' as const, title: 'Campaign saturation warning', description: 'Startup Growth Sprint is approaching diminishing returns. Consider refreshing audience.', priority: 'low' as const },
 ];
 
-export const templates = [
-  { id: '1', name: 'Enterprise Intro', channel: 'whatsapp' as const, body: 'Hi {{name}}, I noticed {{business}} is scaling rapidly. We help enterprise companies streamline client acquisition — would love to share how.' },
-  { id: '2', name: 'Follow-up #1', channel: 'email' as const, body: 'Dear {{name}}, Following up on our previous conversation about {{business}}\'s growth plans...' },
-  { id: '3', name: 'Startup Outreach', channel: 'email' as const, body: 'Hi {{name}}, Congrats on {{business}}\'s momentum! We specialize in helping fast-growing startups...' },
-  { id: '4', name: 'Check-in', channel: 'whatsapp' as const, body: '{{name}}, hope you\'re well. Quick question — is {{business}} still looking to expand in Q2?' },
-  { id: '5', name: 'Proposal Follow-up', channel: 'both' as const, body: '{{name}}, great speaking with you. As discussed, here\'s how we can help {{business}}...' },
+export const templates: Template[] = [
+  { id: '1', name: 'Enterprise Intro', channel: 'whatsapp', body: 'Hi {{name}}, I noticed {{business}} is scaling rapidly. We help enterprise companies streamline client acquisition — would love to share how.' },
+  { id: '2', name: 'Follow-up #1', channel: 'email', body: 'Dear {{name}}, Following up on our previous conversation about {{business}}\'s growth plans...' },
+  { id: '3', name: 'Startup Outreach', channel: 'email', body: 'Hi {{name}}, Congrats on {{business}}\'s momentum! We specialize in helping fast-growing startups...' },
+  { id: '4', name: 'Check-in', channel: 'whatsapp', body: '{{name}}, hope you\'re well. Quick question — is {{business}} still looking to expand in Q2?' },
+  { id: '5', name: 'Proposal Follow-up', channel: 'both', body: '{{name}}, great speaking with you. As discussed, here\'s how we can help {{business}}...' },
+];
+
+export const recentActivities: Activity[] = [
+  { id: '1', type: 'message_sent', description: 'Message sent to Sarah Chen via WhatsApp', timestamp: '2026-04-01T14:30:00' },
+  { id: '2', type: 'status_changed', description: 'James Rodriguez moved to Closed', timestamp: '2026-04-01T12:15:00' },
+  { id: '3', type: 'lead_added', description: 'Priya Patel added as new lead', timestamp: '2026-03-31T16:45:00' },
+  { id: '4', type: 'campaign_created', description: 'Campaign "Re-engagement Wave" created', timestamp: '2026-03-31T10:00:00' },
+  { id: '5', type: 'lead_imported', description: '12 leads imported from PhantomBuster CSV', timestamp: '2026-03-30T09:20:00' },
+  { id: '6', type: 'campaign_toggled', description: 'Campaign "Q1 Enterprise Outreach" activated', timestamp: '2026-03-29T11:30:00' },
+  { id: '7', type: 'message_sent', description: 'Follow-up email sent to Elena Vasquez', timestamp: '2026-03-29T08:00:00' },
+  { id: '8', type: 'status_changed', description: 'Omar Hassan moved to Contacted', timestamp: '2026-03-28T15:20:00' },
 ];
