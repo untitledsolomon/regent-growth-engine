@@ -5,6 +5,7 @@ import { campaigns as initialCampaigns, Campaign } from "@/data/mockData";
 import { Plus, Play, Pause, CheckCircle, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CreateCampaignDialog } from "@/components/CreateCampaignDialog";
+import { CampaignDetailDrawer } from "@/components/CampaignDetailDrawer";
 import { toast } from "sonner";
 
 const statusIcons = { draft: FileText, active: Play, paused: Pause, completed: CheckCircle };
@@ -18,13 +19,15 @@ const statusColors = {
 export default function CampaignsPage() {
   const [campaignsList, setCampaignsList] = useState<Campaign[]>(initialCampaigns);
   const [createOpen, setCreateOpen] = useState(false);
+  const [detailCampaign, setDetailCampaign] = useState<Campaign | null>(null);
 
   const handleAdd = (campaign: Campaign) => {
     setCampaignsList(prev => [campaign, ...prev]);
     toast.success(`Campaign "${campaign.name}" created`);
   };
 
-  const toggleStatus = (id: string) => {
+  const toggleStatus = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
     setCampaignsList(prev => prev.map(c => {
       if (c.id !== id) return c;
       const next = c.status === 'draft' ? 'active' : c.status === 'active' ? 'paused' : c.status === 'paused' ? 'active' : c.status;
@@ -46,14 +49,19 @@ export default function CampaignsPage() {
           const convRate = campaign.sent > 0 ? ((campaign.conversions / campaign.sent) * 100).toFixed(0) : '0';
           
           return (
-            <div key={campaign.id} className="glass rounded-xl p-5 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 animate-slide-in" style={{ animationDelay: `${i * 80}ms` }}>
+            <div
+              key={campaign.id}
+              className="glass rounded-xl p-5 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 animate-slide-in cursor-pointer"
+              style={{ animationDelay: `${i * 80}ms` }}
+              onClick={() => setDetailCampaign(campaign)}
+            >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1 min-w-0">
                   <h3 className="font-display font-semibold text-base truncate">{campaign.name}</h3>
                   <p className="text-xs text-muted-foreground mt-0.5 capitalize">{campaign.channel} channel</p>
                 </div>
                 <button
-                  onClick={() => toggleStatus(campaign.id)}
+                  onClick={(e) => toggleStatus(campaign.id, e)}
                   className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium cursor-pointer hover:opacity-80 transition-opacity ${statusColors[campaign.status]}`}
                 >
                   <Icon className="w-3 h-3" /> {campaign.status}
@@ -93,6 +101,7 @@ export default function CampaignsPage() {
       </div>
 
       <CreateCampaignDialog open={createOpen} onOpenChange={setCreateOpen} onAdd={handleAdd} />
+      <CampaignDetailDrawer campaign={detailCampaign} open={!!detailCampaign} onOpenChange={v => { if (!v) setDetailCampaign(null); }} />
     </DashboardLayout>
   );
 }
