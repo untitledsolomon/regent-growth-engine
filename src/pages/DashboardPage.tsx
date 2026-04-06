@@ -1,7 +1,9 @@
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { PageHeader, StatCard } from "@/components/DashboardWidgets";
 import { leads, dailyMetrics, campaigns, aiInsights, funnelData, recentActivities } from "@/data/mockData";
-import { Users, Send, MessageSquare, Trophy, TrendingUp, Lightbulb, AlertTriangle, Zap, Activity, UserPlus, MailCheck, Megaphone, Upload, ToggleRight } from "lucide-react";
+import { Users, Send, MessageSquare, Trophy, TrendingUp, Lightbulb, AlertTriangle, Zap, Activity, UserPlus, MailCheck, Megaphone, Upload, ToggleRight, Plus, FileUp, PenSquare } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
 
 const totalLeads = leads.length;
@@ -23,9 +25,27 @@ const activityIcons = {
 };
 
 export default function DashboardPage() {
+  const navigate = useNavigate();
+
+  const quickActions = [
+    { label: "Add Lead", icon: Plus, action: () => navigate("/leads") },
+    { label: "New Campaign", icon: Megaphone, action: () => navigate("/campaigns") },
+    { label: "Compose Message", icon: PenSquare, action: () => navigate("/messages") },
+    { label: "Import CSV", icon: FileUp, action: () => navigate("/leads") },
+  ];
+
   return (
     <DashboardLayout>
       <PageHeader title="Dashboard" subtitle="Welcome back. Here's your acquisition overview." />
+
+      {/* Quick Actions */}
+      <div className="flex flex-wrap gap-2 mb-6">
+        {quickActions.map((qa) => (
+          <Button key={qa.label} variant="outline" size="sm" className="gap-2" onClick={qa.action}>
+            <qa.icon className="w-4 h-4" /> {qa.label}
+          </Button>
+        ))}
+      </div>
       
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
         <StatCard title="Total Leads" value={totalLeads} change="+12% vs last month" changeType="positive" icon={Users} color="primary" />

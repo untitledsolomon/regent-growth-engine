@@ -9,6 +9,7 @@ import CampaignsPage from "./pages/CampaignsPage";
 import PipelinePage from "./pages/PipelinePage";
 import MessagesPage from "./pages/MessagesPage";
 import AnalyticsPage from "./pages/AnalyticsPage";
+import IntegrationsPage from "./pages/IntegrationsPage";
 import SettingsPage from "./pages/SettingsPage";
 import NotFound from "./pages/NotFound";
 
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/pipeline" element={<PipelinePage />} />
           <Route path="/messages" element={<MessagesPage />} />
           <Route path="/analytics" element={<AnalyticsPage />} />
+          <Route path="/integrations" element={<IntegrationsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
