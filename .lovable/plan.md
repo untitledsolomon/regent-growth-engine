@@ -1,87 +1,90 @@
 
 
-## Plan: Complete Functionality & Missing Features
+## Plan: Dedicated Integrations Page with Metrics + Remaining Gaps
 
-### What's Missing
+### Overview
+Break integrations out of Settings into their own top-level page (`/integrations`) with per-integration detail panels, mock metrics, sync history, and status monitoring. Then address remaining gaps across the app.
 
-1. **Settings page** — currently redirects to `/` (no actual page)
-2. **PhantomBuster integration** — CSV import exists but no dedicated PhantomBuster workflow with pre-configured column mappings for PB's export format
-3. **Lead detail view** — no way to see full lead info, activity timeline, or message history per lead
-4. **Notification/activity system** — no activity feed or recent actions tracking
-5. **Dark mode toggle** — CSS variables exist for dark mode but no toggle UI
-6. **Delete lead functionality** — can edit but not delete
-7. **Campaign detail view** — no way to see which leads are in a campaign or drill into performance
-8. **Template CRUD** — templates are read-only, can't create/edit/delete
-9. **Bulk actions on leads** — no select-all, bulk status change, bulk delete
-10. **Search in messages** — no filtering/search in message history
-11. **Export functionality** — no way to export leads or reports
+---
 
-### Implementation Plan
+### 1. Integrations Page (`/integrations`)
 
-#### 1. Settings Page
-- Create `src/pages/SettingsPage.tsx` with sections: Profile, Integrations (PhantomBuster API key field, WhatsApp config, Zoho Mail SMTP config), Notifications preferences, and a dark mode toggle
-- All settings stored in local state with mock defaults
-- Update `App.tsx` route from `Navigate` to actual `SettingsPage`
+Create `src/pages/IntegrationsPage.tsx` as a full-featured page with three integration cards that expand into detailed views:
 
-#### 2. PhantomBuster Integration Section
-- Add a dedicated "PhantomBuster" panel inside Settings with API key input (mock) and a "Sync Now" button
-- Enhance the CSV import dialog with a "PhantomBuster" preset that auto-maps PB-specific columns (`firstName`, `lastName`, `companyName`, `linkedinProfile`, `emailAddress`, `phoneNumber`)
-- Add LinkedIn profile URL field to `Lead` interface and display it in lead detail
-- Show "PhantomBuster" as a source badge throughout the app
+**PhantomBuster Section**
+- Connection status indicator (connected/disconnected)
+- API key configuration field
+- "Sync Now" button with mock loading state
+- Sync history table (last 5 syncs with timestamp, leads imported, status)
+- Metrics: total leads imported, last sync time, average leads per sync, sync success rate
+- Phantom selector (mock list of phantoms: "LinkedIn Sales Navigator", "LinkedIn Profile Scraper", etc.)
+- Auto-sync toggle with interval selector (hourly/daily/weekly)
 
-#### 3. Lead Detail Drawer
-- Create `src/components/LeadDetailDrawer.tsx` using Sheet component
-- Shows full contact info, score gauge, status with ability to change, tags, message history for that lead, and an activity timeline (mock)
-- Click a lead row in LeadsPage or Pipeline card to open it
+**WhatsApp Business Section**
+- Connection status + phone number display
+- Metrics: messages sent today, delivery rate, read rate, reply rate
+- Recent delivery log (last 10 messages with status)
+- Rate limit indicator (mock: 250/1000 messages used today)
+- QR code placeholder for device linking
 
-#### 4. Dark Mode Toggle
-- Add a theme toggle button in the sidebar footer (sun/moon icon)
-- Toggle `.dark` class on `<html>` element
-- Persist preference in `localStorage`
+**Zoho Mail / SMTP Section**
+- Connection status + configured email display
+- Test connection button (mock)
+- Metrics: emails sent today, bounce rate, open rate
+- SMTP configuration (host, port, TLS toggle, from email)
+- Domain verification status (mock)
 
-#### 5. Template Management
-- Add Create/Edit/Delete template functionality in MessagesPage templates tab
-- Create `src/components/TemplateDialog.tsx` for add/edit with name, channel, body fields
-- Add delete confirmation
+**Layout**: Tab-based or card grid at top, clicking an integration opens a detailed panel below. Each card shows: icon, name, status badge, key metric.
 
-#### 6. Bulk Lead Actions
-- Add checkbox column to leads table
-- "Select All" checkbox in header
-- Floating action bar when leads are selected: bulk status change, bulk delete, bulk add to campaign
+### 2. Mock Data for Integrations
 
-#### 7. Lead Delete + Confirmation
-- Add delete button to lead edit dialog and lead detail drawer
-- Use AlertDialog for confirmation
+Add to `mockData.ts`:
+- `IntegrationSyncLog[]` — timestamp, source, leadsCount, status, duration
+- `IntegrationMetrics` — per-integration stats objects
+- `PhantomConfig[]` — list of available phantoms
 
-#### 8. Campaign Detail View
-- Create `src/components/CampaignDetailDrawer.tsx`
-- Click a campaign card to see: assigned leads list, performance metrics, message history for that campaign, ability to add/remove leads
+### 3. Sidebar + Routing Updates
 
-#### 9. Activity Feed on Dashboard
-- Add a "Recent Activity" card to DashboardPage showing latest actions (lead added, status changed, message sent, campaign created)
-- Mock activity data in `mockData.ts`
+- Add "Integrations" nav item to `AppSidebar.tsx` (use `Plug` icon, placed between Analytics and Settings)
+- Add route `/integrations` in `App.tsx`
+- Remove integration cards from `SettingsPage.tsx`, keep only Profile + Notifications there
+- Add a "Manage Integrations" link button in Settings that navigates to `/integrations`
 
-#### 10. Message Search & Filters
-- Add search input and channel filter (WhatsApp/Email/All) to MessagesPage history tab
+### 4. Settings Page Cleanup
 
-#### 11. Export Leads
-- Add "Export CSV" button to LeadsPage that generates and downloads a CSV of current filtered leads
+Simplify `SettingsPage.tsx` to just:
+- Profile section
+- Notification preferences
+- A link/button to `/integrations` for integration management
+
+### 5. Remaining Gaps to Address
+
+**a. Pagination on Leads table** — add simple prev/next pagination (20 per page) to `LeadsPage.tsx`
+
+**b. Empty states polish** — add illustrated empty states for Campaigns (no campaigns yet), Messages (no messages), and Pipeline (no leads in stage)
+
+**c. Source filter on Leads** — add a source dropdown filter alongside the existing status filter
+
+**d. Dashboard quick actions** — add a row of quick action buttons on the dashboard: "Add Lead", "New Campaign", "Compose Message", "Import CSV" that link to the respective pages/dialogs
+
+**e. Breadcrumb/page context** — the PageHeader already exists but lacks breadcrumb navigation for nested views
+
+---
 
 ### Files to Create
-- `src/pages/SettingsPage.tsx`
-- `src/components/LeadDetailDrawer.tsx`
-- `src/components/CampaignDetailDrawer.tsx`
-- `src/components/TemplateDialog.tsx`
-- `src/components/ThemeToggle.tsx`
+- `src/pages/IntegrationsPage.tsx`
 
 ### Files to Modify
-- `src/App.tsx` — add SettingsPage route
-- `src/data/mockData.ts` — add activity feed data, LinkedIn URL to Lead
-- `src/components/AppSidebar.tsx` — add dark mode toggle
-- `src/pages/LeadsPage.tsx` — add bulk actions, delete, click-to-detail, export CSV
-- `src/pages/CampaignsPage.tsx` — add click-to-detail drawer
-- `src/pages/MessagesPage.tsx` — add search/filter, template CRUD
-- `src/pages/DashboardPage.tsx` — add recent activity feed
-- `src/pages/PipelinePage.tsx` — add click-to-detail on pipeline cards
-- `src/components/CSVImportDialog.tsx` — add PhantomBuster preset mapping
+- `src/data/mockData.ts` — add integration sync logs, metrics, phantom configs
+- `src/App.tsx` — add `/integrations` route
+- `src/components/AppSidebar.tsx` — add Integrations nav item
+- `src/pages/SettingsPage.tsx` — remove integration sections, add link to integrations page
+- `src/pages/LeadsPage.tsx` — add pagination + source filter
+- `src/pages/DashboardPage.tsx` — add quick action buttons
+
+### Technical Notes
+- All integration data is mock/client-side state
+- Integration metrics use the same `glass` card styling as the rest of the app
+- Sync history uses the existing table pattern from LeadsPage
+- Each integration detail section is a collapsible or tabbed panel within the page
 
