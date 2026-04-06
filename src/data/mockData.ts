@@ -181,12 +181,3 @@ export const recentActivities: Activity[] = [
   { id: '7', type: 'message_sent', description: 'Follow-up email sent to Elena Vasquez', timestamp: '2026-03-29T08:00:00' },
   { id: '8', type: 'status_changed', description: 'Omar Hassan moved to Contacted', timestamp: '2026-03-28T15:20:00' },
 ];
-  { id: '1', type: 'message_sent', description: 'Message sent to Sarah Chen via WhatsApp', timestamp: '2026-04-01T14:30:00' },
-  { id: '2', type: 'status_changed', description: 'James Rodriguez moved to Closed', timestamp: '2026-04-01T12:15:00' },
-  { id: '3', type: 'lead_added', description: 'Priya Patel added as new lead', timestamp: '2026-03-31T16:45:00' },
-  { id: '4', type: 'campaign_created', description: 'Campaign "Re-engagement Wave" created', timestamp: '2026-03-31T10:00:00' },
-  { id: '5', type: 'lead_imported', description: '12 leads imported from PhantomBuster CSV', timestamp: '2026-03-30T09:20:00' },
-  { id: '6', type: 'campaign_toggled', description: 'Campaign "Q1 Enterprise Outreach" activated', timestamp: '2026-03-29T11:30:00' },
-  { id: '7', type: 'message_sent', description: 'Follow-up email sent to Elena Vasquez', timestamp: '2026-03-29T08:00:00' },
-  { id: '8', type: 'status_changed', description: 'Omar Hassan moved to Contacted', timestamp: '2026-03-28T15:20:00' },
-];
