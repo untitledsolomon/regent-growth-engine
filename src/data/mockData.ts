@@ -140,7 +140,47 @@ export const templates: Template[] = [
   { id: '5', name: 'Proposal Follow-up', channel: 'both', body: '{{name}}, great speaking with you. As discussed, here\'s how we can help {{business}}...' },
 ];
 
+export interface IntegrationSyncLog {
+  id: string;
+  timestamp: string;
+  source: string;
+  leadsCount: number;
+  status: 'success' | 'partial' | 'failed';
+  duration: string;
+}
+
+export interface PhantomConfig {
+  id: string;
+  name: string;
+  type: string;
+}
+
+export const phantomConfigs: PhantomConfig[] = [
+  { id: 'ph1', name: 'LinkedIn Sales Navigator Search', type: 'scraper' },
+  { id: 'ph2', name: 'LinkedIn Profile Scraper', type: 'scraper' },
+  { id: 'ph3', name: 'LinkedIn Auto Connect', type: 'action' },
+  { id: 'ph4', name: 'LinkedIn Message Sender', type: 'action' },
+  { id: 'ph5', name: 'Google Maps Scraper', type: 'scraper' },
+];
+
+export const integrationSyncLogs: IntegrationSyncLog[] = [
+  { id: 's1', timestamp: '2026-04-06T10:30:00', source: 'LinkedIn Sales Navigator Search', leadsCount: 15, status: 'success', duration: '2m 14s' },
+  { id: 's2', timestamp: '2026-04-05T10:30:00', source: 'LinkedIn Profile Scraper', leadsCount: 8, status: 'success', duration: '1m 42s' },
+  { id: 's3', timestamp: '2026-04-04T10:30:00', source: 'LinkedIn Sales Navigator Search', leadsCount: 22, status: 'success', duration: '3m 05s' },
+  { id: 's4', timestamp: '2026-04-03T10:30:00', source: 'LinkedIn Sales Navigator Search', leadsCount: 3, status: 'partial', duration: '4m 30s' },
+  { id: 's5', timestamp: '2026-04-02T10:30:00', source: 'Google Maps Scraper', leadsCount: 0, status: 'failed', duration: '0m 12s' },
+];
+
 export const recentActivities: Activity[] = [
+  { id: '1', type: 'message_sent', description: 'Message sent to Sarah Chen via WhatsApp', timestamp: '2026-04-01T14:30:00' },
+  { id: '2', type: 'status_changed', description: 'James Rodriguez moved to Closed', timestamp: '2026-04-01T12:15:00' },
+  { id: '3', type: 'lead_added', description: 'Priya Patel added as new lead', timestamp: '2026-03-31T16:45:00' },
+  { id: '4', type: 'campaign_created', description: 'Campaign "Re-engagement Wave" created', timestamp: '2026-03-31T10:00:00' },
+  { id: '5', type: 'lead_imported', description: '12 leads imported from PhantomBuster CSV', timestamp: '2026-03-30T09:20:00' },
+  { id: '6', type: 'campaign_toggled', description: 'Campaign "Q1 Enterprise Outreach" activated', timestamp: '2026-03-29T11:30:00' },
+  { id: '7', type: 'message_sent', description: 'Follow-up email sent to Elena Vasquez', timestamp: '2026-03-29T08:00:00' },
+  { id: '8', type: 'status_changed', description: 'Omar Hassan moved to Contacted', timestamp: '2026-03-28T15:20:00' },
+];
   { id: '1', type: 'message_sent', description: 'Message sent to Sarah Chen via WhatsApp', timestamp: '2026-04-01T14:30:00' },
   { id: '2', type: 'status_changed', description: 'James Rodriguez moved to Closed', timestamp: '2026-04-01T12:15:00' },
   { id: '3', type: 'lead_added', description: 'Priya Patel added as new lead', timestamp: '2026-03-31T16:45:00' },

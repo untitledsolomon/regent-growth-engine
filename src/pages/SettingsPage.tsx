@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { PageHeader } from "@/components/DashboardWidgets";
 import { Input } from "@/components/ui/input";
@@ -6,19 +7,11 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { User, Key, MessageSquare, Mail, Bell, RefreshCw, CheckCircle, Globe } from "lucide-react";
+import { User, Bell, Plug, ArrowRight } from "lucide-react";
 
 export default function SettingsPage() {
+  const navigate = useNavigate();
   const [profile, setProfile] = useState({ name: 'Regent Admin', email: 'admin@regent.io', company: 'Regent Agency' });
-  const [integrations, setIntegrations] = useState({
-    phantombusterKey: '',
-    phantombusterConnected: false,
-    whatsappNumber: '',
-    whatsappConnected: false,
-    zohoSmtp: '',
-    zohoEmail: '',
-    zohoConnected: false,
-  });
   const [notifications, setNotifications] = useState({
     newLead: true,
     messageReply: true,
@@ -27,29 +20,10 @@ export default function SettingsPage() {
   });
 
   const handleSaveProfile = () => toast.success('Profile saved');
-  const handleSyncPB = () => {
-    if (!integrations.phantombusterKey) { toast.error('Enter a PhantomBuster API key first'); return; }
-    toast.loading('Syncing with PhantomBuster...');
-    setTimeout(() => {
-      setIntegrations(prev => ({ ...prev, phantombusterConnected: true }));
-      toast.dismiss();
-      toast.success('PhantomBuster connected — 12 leads synced');
-    }, 2000);
-  };
-  const handleConnectWhatsapp = () => {
-    if (!integrations.whatsappNumber) { toast.error('Enter a WhatsApp Business number first'); return; }
-    setIntegrations(prev => ({ ...prev, whatsappConnected: true }));
-    toast.success('WhatsApp Business connected');
-  };
-  const handleConnectZoho = () => {
-    if (!integrations.zohoSmtp || !integrations.zohoEmail) { toast.error('Fill in SMTP host and email'); return; }
-    setIntegrations(prev => ({ ...prev, zohoConnected: true }));
-    toast.success('Zoho Mail connected');
-  };
 
   return (
     <DashboardLayout>
-      <PageHeader title="Settings" subtitle="Manage your profile, integrations, and preferences" />
+      <PageHeader title="Settings" subtitle="Manage your profile and preferences" />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Profile */}
@@ -93,84 +67,22 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        {/* PhantomBuster */}
-        <div className="glass rounded-xl p-6">
-          <h3 className="font-display font-semibold text-base mb-1 flex items-center gap-2">
-            <Globe className="w-4 h-4" /> PhantomBuster
-            {integrations.phantombusterConnected && <CheckCircle className="w-4 h-4 text-regent-emerald" />}
-          </h3>
-          <p className="text-xs text-muted-foreground mb-4">Auto-import leads from PhantomBuster phantoms</p>
-          <div className="space-y-3">
-            <div>
-              <Label className="text-xs">API Key</Label>
-              <Input
-                type="password"
-                value={integrations.phantombusterKey}
-                onChange={e => setIntegrations(prev => ({ ...prev, phantombusterKey: e.target.value }))}
-                placeholder="pb_xxxxxxxxxxxxxxxx"
-                className="mt-1 font-mono text-xs"
-              />
+        {/* Integrations Link */}
+        <div className="lg:col-span-2 glass rounded-xl p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-lg bg-primary/10">
+                <Plug className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <h3 className="font-display font-semibold text-base">Integrations</h3>
+                <p className="text-sm text-muted-foreground">Manage PhantomBuster, WhatsApp, and Zoho Mail connections</p>
+              </div>
             </div>
-            <div className="flex gap-2">
-              <Button size="sm" onClick={handleSyncPB} className="gap-1.5">
-                <RefreshCw className="w-3.5 h-3.5" /> Sync Now
-              </Button>
-              {integrations.phantombusterConnected && (
-                <span className="inline-flex items-center text-xs text-regent-emerald gap-1"><CheckCircle className="w-3 h-3" /> Connected</span>
-              )}
-            </div>
+            <Button variant="outline" className="gap-2" onClick={() => navigate('/integrations')}>
+              Manage Integrations <ArrowRight className="w-4 h-4" />
+            </Button>
           </div>
-        </div>
-
-        {/* WhatsApp */}
-        <div className="glass rounded-xl p-6">
-          <h3 className="font-display font-semibold text-base mb-1 flex items-center gap-2">
-            <MessageSquare className="w-4 h-4" /> WhatsApp Business
-            {integrations.whatsappConnected && <CheckCircle className="w-4 h-4 text-regent-emerald" />}
-          </h3>
-          <p className="text-xs text-muted-foreground mb-4">Connect your WhatsApp Business API</p>
-          <div className="space-y-3">
-            <div>
-              <Label className="text-xs">Business Phone Number</Label>
-              <Input
-                value={integrations.whatsappNumber}
-                onChange={e => setIntegrations(prev => ({ ...prev, whatsappNumber: e.target.value }))}
-                placeholder="+1-555-000-0000"
-                className="mt-1"
-              />
-            </div>
-            <Button size="sm" onClick={handleConnectWhatsapp}>Connect WhatsApp</Button>
-          </div>
-        </div>
-
-        {/* Zoho Mail */}
-        <div className="glass rounded-xl p-6 lg:col-span-2">
-          <h3 className="font-display font-semibold text-base mb-1 flex items-center gap-2">
-            <Mail className="w-4 h-4" /> Zoho Mail / SMTP
-            {integrations.zohoConnected && <CheckCircle className="w-4 h-4 text-regent-emerald" />}
-          </h3>
-          <p className="text-xs text-muted-foreground mb-4">Configure email sending via Zoho Mail SMTP</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <Label className="text-xs">SMTP Host</Label>
-              <Input
-                value={integrations.zohoSmtp}
-                onChange={e => setIntegrations(prev => ({ ...prev, zohoSmtp: e.target.value }))}
-                placeholder="smtp.zoho.com"
-                className="mt-1"
-              />
-            </div>
-            <div>
-              <Label className="text-xs">From Email</Label>
-              <Input
-                value={integrations.zohoEmail}
-                onChange={e => setIntegrations(prev => ({ ...prev, zohoEmail: e.target.value }))}
-                placeholder="outreach@regent.io"
-                className="mt-1"
-              />
-            </div>
-          </div>
-          <Button size="sm" onClick={handleConnectZoho} className="mt-3">Connect Zoho Mail</Button>
         </div>
       </div>
     </DashboardLayout>

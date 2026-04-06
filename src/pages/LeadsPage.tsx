@@ -3,7 +3,7 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { PageHeader } from "@/components/DashboardWidgets";
 import { StatusBadge, ScoreBadge } from "@/components/StatusBadge";
 import { leads as initialLeads, Lead, LeadStatus } from "@/data/mockData";
-import { Search, Upload, Filter, Plus, Pencil, Download, Trash2 } from "lucide-react";
+import { Search, Upload, Filter, Plus, Pencil, Download, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -24,12 +24,19 @@ export default function LeadsPage() {
   const [detailLead, setDetailLead] = useState<Lead | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
+  const [sourceFilter, setSourceFilter] = useState<string>('all');
+  const [page, setPage] = useState(1);
+  const perPage = 20;
 
   const filtered = leadsList.filter(l => {
     const matchesSearch = l.name.toLowerCase().includes(search.toLowerCase()) || l.business.toLowerCase().includes(search.toLowerCase());
     const matchesStatus = statusFilter === 'all' || l.status === statusFilter;
-    return matchesSearch && matchesStatus;
+    const matchesSource = sourceFilter === 'all' || l.source === sourceFilter;
+    return matchesSearch && matchesStatus && matchesSource;
   });
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
+  const paginated = filtered.slice((page - 1) * perPage, page * perPage);
 
   const statuses: (LeadStatus | 'all')[] = ['all', 'new', 'contacted', 'follow-up', 'interested', 'closed'];
 
@@ -141,11 +148,24 @@ export default function LeadsPage() {
           <div className="flex items-center gap-2 overflow-x-auto">
             <Filter className="w-4 h-4 text-muted-foreground shrink-0" />
             {statuses.map(s => (
-              <button key={s} onClick={() => setStatusFilter(s)} className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors whitespace-nowrap ${statusFilter === s ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}>
+              <button key={s} onClick={() => { setStatusFilter(s); setPage(1); }} className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors whitespace-nowrap ${statusFilter === s ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}>
                 {s === 'all' ? 'All' : s.charAt(0).toUpperCase() + s.slice(1)}
               </button>
             ))}
           </div>
+          <Select value={sourceFilter} onValueChange={v => { setSourceFilter(v); setPage(1); }}>
+            <SelectTrigger className="w-[140px] h-9 text-xs">
+              <SelectValue placeholder="Source" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Sources</SelectItem>
+              <SelectItem value="phantombuster">PhantomBuster</SelectItem>
+              <SelectItem value="linkedin">LinkedIn</SelectItem>
+              <SelectItem value="referral">Referral</SelectItem>
+              <SelectItem value="website">Website</SelectItem>
+              <SelectItem value="cold-outreach">Cold Outreach</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
@@ -170,7 +190,7 @@ export default function LeadsPage() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((lead, i) => (
+              {paginated.map((lead, i) => (
                 <tr
                   key={lead.id}
                   className="border-b border-border/50 hover:bg-muted/30 transition-colors animate-slide-in cursor-pointer"
@@ -217,6 +237,26 @@ export default function LeadsPage() {
           </div>
         )}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between mt-4">
+          <p className="text-xs text-muted-foreground">Showing {(page - 1) * perPage + 1}–{Math.min(page * perPage, filtered.length)} of {filtered.length}</p>
+          <div className="flex items-center gap-1">
+            <Button variant="outline" size="icon" className="h-8 w-8" disabled={page === 1} onClick={() => setPage(p => p - 1)}>
+              <ChevronLeft className="w-4 h-4" />
+            </Button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).slice(Math.max(0, page - 3), page + 2).map(p => (
+              <Button key={p} variant={p === page ? "default" : "outline"} size="icon" className="h-8 w-8 text-xs" onClick={() => setPage(p)}>
+                {p}
+              </Button>
+            ))}
+            <Button variant="outline" size="icon" className="h-8 w-8" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
+      )}
 
       <AddLeadDialog open={addOpen || !!editLead} onOpenChange={(v) => { if (!v) { setAddOpen(false); setEditLead(null); } else setAddOpen(true); }} onAdd={handleAddLead} editLead={editLead} onUpdate={handleUpdateLead} />
       <CSVImportDialog open={csvOpen} onOpenChange={setCsvOpen} onImport={handleImport} />

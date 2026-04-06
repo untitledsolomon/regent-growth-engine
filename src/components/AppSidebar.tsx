@@ -2,7 +2,7 @@ import { NavLink } from "@/components/NavLink";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { 
   LayoutDashboard, Users, Megaphone, GitBranch, BarChart3, 
-  MessageSquare, Settings, ChevronLeft, ChevronRight 
+  MessageSquare, Settings, ChevronLeft, ChevronRight, Plug 
 } from "lucide-react";
 import { useState } from "react";
 
@@ -13,6 +13,7 @@ const navItems = [
   { title: "Pipeline", icon: GitBranch, to: "/pipeline" },
   { title: "Messages", icon: MessageSquare, to: "/messages" },
   { title: "Analytics", icon: BarChart3, to: "/analytics" },
+  { title: "Integrations", icon: Plug, to: "/integrations" },
 ];
 
 export function AppSidebar() {
