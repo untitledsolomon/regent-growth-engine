@@ -1,31 +1,33 @@
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { PageHeader, StatCard } from "@/components/DashboardWidgets";
-import { leads, dailyMetrics, campaigns, aiInsights, funnelData, recentActivities } from "@/data/mockData";
+import { useLeads } from "@/hooks/useLeads";
+import { useCampaigns } from "@/hooks/useCampaigns";
+import { dailyMetrics, aiInsights, funnelData, recentActivities } from "@/data/mockData";
 import { Users, Send, MessageSquare, Trophy, TrendingUp, Lightbulb, AlertTriangle, Zap, Activity, UserPlus, MailCheck, Megaphone, Upload, ToggleRight, Plus, FileUp, PenSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
-
-const totalLeads = leads.length;
-const contacted = leads.filter(l => l.status !== 'new').length;
-const replied = leads.filter(l => ['follow-up', 'interested', 'closed'].includes(l.status)).length;
-const conversions = leads.filter(l => l.status === 'closed').length;
-const conversionRate = ((conversions / totalLeads) * 100).toFixed(1);
+import { DashboardSkeleton } from "@/components/SkeletonLoaders";
 
 const insightIcons = { opportunity: Zap, trend: TrendingUp, suggestion: Lightbulb, alert: AlertTriangle };
-const insightColors = { high: 'border-l-regent-coral', medium: 'border-l-regent-gold', low: 'border-l-regent-sky' };
+const insightColors = { high: 'border-l-destructive', medium: 'border-l-regent-gold', low: 'border-l-accent' };
 
 const activityIcons = {
-  lead_added: UserPlus,
-  status_changed: Activity,
-  message_sent: MailCheck,
-  campaign_created: Megaphone,
-  lead_imported: Upload,
-  campaign_toggled: ToggleRight,
+  lead_added: UserPlus, status_changed: Activity, message_sent: MailCheck,
+  campaign_created: Megaphone, lead_imported: Upload, campaign_toggled: ToggleRight,
 };
 
 export default function DashboardPage() {
   const navigate = useNavigate();
+  const { leads, loading: leadsLoading } = useLeads();
+  const { campaigns, loading: campaignsLoading } = useCampaigns();
+  const loading = leadsLoading || campaignsLoading;
+
+  const totalLeads = leads.length;
+  const contacted = leads.filter(l => l.status !== 'new').length;
+  const replied = leads.filter(l => ['follow-up', 'interested', 'closed'].includes(l.status)).length;
+  const conversions = leads.filter(l => l.status === 'closed').length;
+  const conversionRate = totalLeads > 0 ? ((conversions / totalLeads) * 100).toFixed(1) : '0';
 
   const quickActions = [
     { label: "Add Lead", icon: Plus, action: () => navigate("/leads") },
@@ -34,11 +36,12 @@ export default function DashboardPage() {
     { label: "Import CSV", icon: FileUp, action: () => navigate("/leads") },
   ];
 
+  if (loading) return <DashboardLayout><PageHeader title="Dashboard" subtitle="Loading..." /><DashboardSkeleton /></DashboardLayout>;
+
   return (
     <DashboardLayout>
       <PageHeader title="Dashboard" subtitle="Welcome back. Here's your acquisition overview." />
 
-      {/* Quick Actions */}
       <div className="flex flex-wrap gap-2 mb-6">
         {quickActions.map((qa) => (
           <Button key={qa.label} variant="outline" size="sm" className="gap-2" onClick={qa.action}>
@@ -57,17 +60,15 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         <div className="lg:col-span-2 glass rounded-xl p-6">
-          <h3 className="font-display font-semibold text-lg mb-4">Performance Trend</h3>
+          <h3 className="font-semibold text-lg mb-4" style={{ fontFamily: 'Space Grotesk' }}>Performance Trend</h3>
           <ResponsiveContainer width="100%" height={280}>
             <AreaChart data={dailyMetrics}>
               <defs>
                 <linearGradient id="colorLeads" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="hsl(250, 75%, 58%)" stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor="hsl(250, 75%, 58%)" stopOpacity={0}/>
+                  <stop offset="5%" stopColor="hsl(250, 75%, 58%)" stopOpacity={0.3}/><stop offset="95%" stopColor="hsl(250, 75%, 58%)" stopOpacity={0}/>
                 </linearGradient>
                 <linearGradient id="colorConversions" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="hsl(170, 70%, 45%)" stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor="hsl(170, 70%, 45%)" stopOpacity={0}/>
+                  <stop offset="5%" stopColor="hsl(170, 70%, 45%)" stopOpacity={0.3}/><stop offset="95%" stopColor="hsl(170, 70%, 45%)" stopOpacity={0}/>
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(220, 15%, 90%)" />
@@ -81,7 +82,7 @@ export default function DashboardPage() {
         </div>
 
         <div className="glass rounded-xl p-6">
-          <h3 className="font-display font-semibold text-lg mb-4">Funnel Overview</h3>
+          <h3 className="font-semibold text-lg mb-4" style={{ fontFamily: 'Space Grotesk' }}>Funnel Overview</h3>
           <div className="space-y-3">
             {funnelData.map((item, i) => (
               <div key={item.stage} className="animate-slide-in" style={{ animationDelay: `${i * 80}ms` }}>
@@ -100,7 +101,7 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         <div className="lg:col-span-2 glass rounded-xl p-6">
-          <h3 className="font-display font-semibold text-lg mb-4">Campaign Performance</h3>
+          <h3 className="font-semibold text-lg mb-4" style={{ fontFamily: 'Space Grotesk' }}>Campaign Performance</h3>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={campaigns.filter(c => c.status !== 'draft')}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(220, 15%, 90%)" />
@@ -113,9 +114,8 @@ export default function DashboardPage() {
           </ResponsiveContainer>
         </div>
 
-        {/* Recent Activity */}
         <div className="glass rounded-xl p-6">
-          <h3 className="font-display font-semibold text-lg mb-4 flex items-center gap-2">
+          <h3 className="font-semibold text-lg mb-4 flex items-center gap-2" style={{ fontFamily: 'Space Grotesk' }}>
             <Activity className="w-5 h-5 text-primary" /> Recent Activity
           </h3>
           <div className="space-y-0">
@@ -124,16 +124,12 @@ export default function DashboardPage() {
               return (
                 <div key={activity.id} className="flex gap-3 py-2.5 animate-slide-in" style={{ animationDelay: `${i * 80}ms` }}>
                   <div className="flex flex-col items-center">
-                    <div className="p-1.5 rounded-lg bg-muted">
-                      <Icon className="w-3.5 h-3.5 text-muted-foreground" />
-                    </div>
+                    <div className="p-1.5 rounded-lg bg-muted"><Icon className="w-3.5 h-3.5 text-muted-foreground" /></div>
                     {i < 5 && <div className="w-px flex-1 bg-border mt-1" />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-medium leading-snug">{activity.description}</p>
-                    <p className="text-[10px] text-muted-foreground mt-0.5">
-                      {new Date(activity.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                    </p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">{new Date(activity.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
                   </div>
                 </div>
               );
@@ -143,8 +139,8 @@ export default function DashboardPage() {
       </div>
 
       <div className="glass rounded-xl p-6">
-        <h3 className="font-display font-semibold text-lg mb-4 flex items-center gap-2">
-          <Zap className="w-5 h-5 text-regent-gold" /> AI Insights
+        <h3 className="font-semibold text-lg mb-4 flex items-center gap-2" style={{ fontFamily: 'Space Grotesk' }}>
+          <Zap className="w-5 h-5" style={{ color: 'hsl(42, 90%, 55%)' }} /> AI Insights
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {aiInsights.map((insight, i) => {
