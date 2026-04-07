@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { PageHeader } from "@/components/DashboardWidgets";
 import { Input } from "@/components/ui/input";
@@ -13,55 +13,226 @@ import { toast } from "sonner";
 import {
   Globe, MessageSquare, Mail, CheckCircle, XCircle, RefreshCw,
   Activity, Zap, Clock, ArrowUpRight, Send, Eye, Reply,
-  AlertTriangle, Shield, QrCode, Server, Wifi
+  AlertTriangle, Shield, QrCode, Server, Wifi, Loader2
 } from "lucide-react";
-import { integrationSyncLogs, phantomConfigs, type IntegrationSyncLog } from "@/data/mockData";
+import { supabase } from "@/lib/supabase";
+import {
+  loadConfig, saveConfig,
+  pbFetchAgents, pbSyncLeads,
+  zohoTestConnection,
+} from "@/lib/integrations";
 
 export default function IntegrationsPage() {
   const [activeTab, setActiveTab] = useState("phantombuster");
+  const [loading, setLoading] = useState(true);
 
   // PhantomBuster state
   const [pbKey, setPbKey] = useState("");
-  const [pbConnected, setPbConnected] = useState(true);
+  const [pbConnected, setPbConnected] = useState(false);
   const [pbSyncing, setPbSyncing] = useState(false);
   const [pbAutoSync, setPbAutoSync] = useState(true);
   const [pbSyncInterval, setPbSyncInterval] = useState("daily");
-  const [pbSelectedPhantom, setPbSelectedPhantom] = useState(phantomConfigs[0]?.id || "");
+  const [pbPhantoms, setPbPhantoms] = useState<{ id: string; name: string }[]>([]);
+  const [pbSelectedPhantom, setPbSelectedPhantom] = useState("");
+  const [pbMetrics, setPbMetrics] = useState({ totalImported: 0, lastSync: "Never", avgPerSync: 0, successRate: 0, totalSyncs: 0 });
+  const [syncLogs, setSyncLogs] = useState<any[]>([]);
 
   // WhatsApp state
-  const [waConnected, setWaConnected] = useState(true);
-  const [waNumber, setWaNumber] = useState("+1-555-800-9090");
+  const [waConnected, setWaConnected] = useState(false);
+  const [waNumber, setWaNumber] = useState("");
+  const [waMetrics] = useState({ sentToday: 0, limit: 1000, deliveryRate: 0, readRate: 0, replyRate: 0, totalSent: 0 });
 
   // Zoho state
-  const [zohoConnected, setZohoConnected] = useState(true);
+  const [zohoConnected, setZohoConnected] = useState(false);
   const [zohoHost, setZohoHost] = useState("smtp.zoho.com");
   const [zohoPort, setZohoPort] = useState("587");
   const [zohoTls, setZohoTls] = useState(true);
-  const [zohoEmail, setZohoEmail] = useState("outreach@regent.io");
+  const [zohoEmail, setZohoEmail] = useState("");
+  const [zohoPassword, setZohoPassword] = useState("");
+  const [zohoMetrics] = useState({ sentToday: 0, bounceRate: 0, openRate: 0, totalSent: 0 });
 
-  const handlePbSync = () => {
+  // ─── LOAD CONFIGS ON MOUNT ───────────────────────────
+  useEffect(() => {
+    async function init() {
+      try {
+        const [pb, wa, zoho] = await Promise.all([
+          loadConfig("phantombuster"),
+          loadConfig("whatsapp"),
+          loadConfig("zoho"),
+        ]);
+
+        // PhantomBuster
+        if (pb) {
+          setPbConnected(pb.connected);
+          setPbKey(pb.config.apiKey || "");
+          setPbAutoSync(pb.config.autoSync ?? true);
+          setPbSyncInterval(pb.config.syncInterval || "daily");
+          setPbSelectedPhantom(pb.config.selectedPhantomId || "");
+          if (pb.connected && pb.config.apiKey) {
+            await fetchPhantoms(pb.config.apiKey);
+          }
+        }
+
+        // WhatsApp
+        if (wa) {
+          setWaConnected(wa.connected);
+          setWaNumber(wa.config.businessNumber || "");
+        }
+
+        // Zoho
+        if (zoho) {
+          setZohoConnected(zoho.connected);
+          setZohoHost(zoho.config.host || "smtp.zoho.com");
+          setZohoPort(zoho.config.port || "587");
+          setZohoTls(zoho.config.tls ?? true);
+          setZohoEmail(zoho.config.email || "");
+        }
+
+        // Metrics + logs
+        await Promise.all([loadPbMetrics(), loadSyncLogs()]);
+      } catch (err) {
+        toast.error("Failed to load integration configs");
+      } finally {
+        setLoading(false);
+      }
+    }
+    init();
+  }, []);
+
+  async function fetchPhantoms(apiKey: string) {
+    try {
+      const data = await pbFetchAgents(apiKey);
+      const agents = (data.agents || []).map((a: any) => ({ id: a.id, name: a.name }));
+      setPbPhantoms(agents);
+      if (agents.length > 0 && !pbSelectedPhantom) {
+        setPbSelectedPhantom(agents[0].id);
+      }
+    } catch {
+      // silently fail — user may have a bad key
+    }
+  }
+
+  async function loadPbMetrics() {
+    const { data: logs } = await supabase
+      .from("integration_sync_logs")
+      .select("*")
+      .eq("source", "PhantomBuster")
+      .order("timestamp", { ascending: false });
+
+    if (!logs || logs.length === 0) return;
+
+    const totalImported = logs.reduce((s, l) => s + (l.leads_count || 0), 0);
+    const successful = logs.filter(l => l.status === "success");
+    const successRate = ((successful.length / logs.length) * 100);
+    const avgPerSync = Math.round(totalImported / logs.length);
+    const lastSync = logs[0]?.timestamp
+      ? new Date(logs[0].timestamp).toLocaleString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })
+      : "Never";
+
+    setPbMetrics({ totalImported, lastSync, avgPerSync, successRate: parseFloat(successRate.toFixed(1)), totalSyncs: logs.length });
+  }
+
+  async function loadSyncLogs() {
+    const { data } = await supabase
+      .from("integration_sync_logs")
+      .select("*")
+      .order("timestamp", { ascending: false })
+      .limit(10);
+    setSyncLogs(data || []);
+  }
+
+  // ─── PHANTOMBUSTER CONNECT ───────────────────────────
+  const handlePbConnect = async () => {
+    if (!pbKey) { toast.error("Enter your API key first"); return; }
+    try {
+      toast.loading("Verifying API key...");
+      await fetchPhantoms(pbKey);
+      await saveConfig("phantombuster", {
+        apiKey: pbKey,
+        selectedPhantomId: pbSelectedPhantom,
+        autoSync: pbAutoSync,
+        syncInterval: pbSyncInterval,
+      }, true);
+      setPbConnected(true);
+      toast.dismiss();
+      toast.success("PhantomBuster connected");
+    } catch (err: any) {
+      toast.dismiss();
+      toast.error(err.message || "Connection failed");
+    }
+  };
+
+  const handlePbDisconnect = async () => {
+    await saveConfig("phantombuster", { apiKey: pbKey }, false);
+    setPbConnected(false);
+    toast.success("Disconnected");
+  };
+
+  // ─── PHANTOMBUSTER SYNC ──────────────────────────────
+  const handlePbSync = async () => {
     if (!pbConnected) { toast.error("Connect PhantomBuster first"); return; }
+    if (!pbSelectedPhantom) { toast.error("Select a Phantom first"); return; }
     setPbSyncing(true);
-    toast.loading("Syncing with PhantomBuster...");
-    setTimeout(() => {
+    const tid = toast.loading("Syncing with PhantomBuster...");
+    try {
+      const count = await pbSyncLeads(pbKey, pbSelectedPhantom);
+      toast.dismiss(tid);
+      toast.success(`Sync complete — ${count} leads imported`);
+      await Promise.all([loadPbMetrics(), loadSyncLogs()]);
+    } catch (err: any) {
+      toast.dismiss(tid);
+      toast.error(err.message || "Sync failed");
+      await supabase.from("integration_sync_logs").insert({
+        source: "PhantomBuster",
+        leads_count: 0,
+        status: "error",
+        error_message: err.message,
+      });
+    } finally {
       setPbSyncing(false);
-      toast.dismiss();
-      toast.success("Sync complete — 8 new leads imported");
-    }, 2500);
+    }
   };
 
-  const handleTestZoho = () => {
-    toast.loading("Testing SMTP connection...");
-    setTimeout(() => {
-      toast.dismiss();
+  // ─── WHATSAPP CONNECT ─────────────────────────────────
+  const handleWaConnect = async () => {
+    // WA credentials live in edge function env vars — we just save the business number
+    await saveConfig("whatsapp", { businessNumber: waNumber }, true);
+    setWaConnected(true);
+    toast.success("WhatsApp connected");
+  };
+
+  const handleWaDisconnect = async () => {
+    await saveConfig("whatsapp", { businessNumber: waNumber }, false);
+    setWaConnected(false);
+    toast.success("WhatsApp disconnected");
+  };
+
+  // ─── ZOHO CONNECT + TEST ──────────────────────────────
+  const handleZohoConnect = async () => {
+    await saveConfig("zoho", {
+      host: zohoHost, port: zohoPort, tls: zohoTls, email: zohoEmail,
+    }, true);
+    setZohoConnected(true);
+    toast.success("Zoho config saved — run Test Connection to verify");
+  };
+
+  const handleZohoDisconnect = async () => {
+    await saveConfig("zoho", { host: zohoHost, port: zohoPort, tls: zohoTls, email: zohoEmail }, false);
+    setZohoConnected(false);
+    toast.success("Disconnected");
+  };
+
+  const handleTestZoho = async () => {
+    const tid = toast.loading("Testing SMTP connection...");
+    try {
+      await zohoTestConnection();
+      toast.dismiss(tid);
       toast.success("SMTP connection successful — test email sent");
-    }, 1500);
+    } catch (err: any) {
+      toast.dismiss(tid);
+      toast.error(err.message || "SMTP test failed");
+    }
   };
-
-  // Mock metrics
-  const pbMetrics = { totalImported: 247, lastSync: "2 hours ago", avgPerSync: 12, successRate: 96.4, totalSyncs: 21 };
-  const waMetrics = { sentToday: 250, limit: 1000, deliveryRate: 97.2, readRate: 84.5, replyRate: 38.1, totalSent: 1842 };
-  const zohoMetrics = { sentToday: 85, bounceRate: 1.4, openRate: 42.8, totalSent: 2130, domainVerified: true };
 
   const integrationCards = [
     { id: "phantombuster", name: "PhantomBuster", icon: Globe, connected: pbConnected, metric: `${pbMetrics.totalImported} leads imported` },
@@ -69,31 +240,30 @@ export default function IntegrationsPage() {
     { id: "zoho", name: "Zoho Mail / SMTP", icon: Mail, connected: zohoConnected, metric: `${zohoMetrics.sentToday} emails today` },
   ];
 
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+        </div>
+      </DashboardLayout>
+    );
+  }
+
   return (
     <DashboardLayout>
       <PageHeader title="Integrations" subtitle="Manage your connected services, monitor performance, and sync data" />
 
-      {/* Integration Cards Overview */}
+      {/* Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         {integrationCards.map((card) => (
-          <button
-            key={card.id}
-            onClick={() => setActiveTab(card.id)}
-            className={`glass rounded-xl p-5 text-left transition-all duration-200 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 ${activeTab === card.id ? "ring-2 ring-primary" : ""}`}
-          >
+          <button key={card.id} onClick={() => setActiveTab(card.id)}
+            className={`glass rounded-xl p-5 text-left transition-all duration-200 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 ${activeTab === card.id ? "ring-2 ring-primary" : ""}`}>
             <div className="flex items-center justify-between mb-3">
-              <div className="p-2.5 rounded-lg bg-muted">
-                <card.icon className="w-5 h-5 text-foreground" />
-              </div>
-              {card.connected ? (
-                <Badge variant="outline" className="text-accent border-accent gap-1 text-xs">
-                  <CheckCircle className="w-3 h-3" /> Connected
-                </Badge>
-              ) : (
-                <Badge variant="outline" className="text-destructive border-destructive gap-1 text-xs">
-                  <XCircle className="w-3 h-3" /> Disconnected
-                </Badge>
-              )}
+              <div className="p-2.5 rounded-lg bg-muted"><card.icon className="w-5 h-5 text-foreground" /></div>
+              {card.connected
+                ? <Badge variant="outline" className="text-accent border-accent gap-1 text-xs"><CheckCircle className="w-3 h-3" /> Connected</Badge>
+                : <Badge variant="outline" className="text-destructive border-destructive gap-1 text-xs"><XCircle className="w-3 h-3" /> Disconnected</Badge>}
             </div>
             <p className="font-display font-semibold">{card.name}</p>
             <p className="text-xs text-muted-foreground mt-0.5">{card.metric}</p>
@@ -101,7 +271,6 @@ export default function IntegrationsPage() {
         ))}
       </div>
 
-      {/* Detailed Panels */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="mb-4">
           <TabsTrigger value="phantombuster" className="gap-1.5"><Globe className="w-3.5 h-3.5" /> PhantomBuster</TabsTrigger>
@@ -112,7 +281,6 @@ export default function IntegrationsPage() {
         {/* PHANTOMBUSTER */}
         <TabsContent value="phantombuster">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Metrics */}
             <div className="lg:col-span-3 grid grid-cols-2 sm:grid-cols-5 gap-3">
               {[
                 { label: "Total Imported", value: pbMetrics.totalImported, icon: ArrowUpRight },
@@ -122,40 +290,34 @@ export default function IntegrationsPage() {
                 { label: "Last Sync", value: pbMetrics.lastSync, icon: Clock },
               ].map((m) => (
                 <div key={m.label} className="glass rounded-xl p-4">
-                  <div className="flex items-center gap-2 mb-1">
-                    <m.icon className="w-3.5 h-3.5 text-muted-foreground" />
-                    <span className="text-xs text-muted-foreground">{m.label}</span>
-                  </div>
+                  <div className="flex items-center gap-2 mb-1"><m.icon className="w-3.5 h-3.5 text-muted-foreground" /><span className="text-xs text-muted-foreground">{m.label}</span></div>
                   <p className="font-display font-bold text-lg">{m.value}</p>
                 </div>
               ))}
             </div>
 
-            {/* Configuration */}
             <div className="glass rounded-xl p-6">
-              <h3 className="font-display font-semibold mb-4 flex items-center gap-2">
-                <Wifi className="w-4 h-4" /> Configuration
-              </h3>
+              <h3 className="font-display font-semibold mb-4 flex items-center gap-2"><Wifi className="w-4 h-4" /> Configuration</h3>
               <div className="space-y-4">
                 <div>
                   <Label className="text-xs">API Key</Label>
                   <Input type="password" value={pbKey} onChange={e => setPbKey(e.target.value)} placeholder="pb_xxxxxxxxxxxxxxxx" className="mt-1 font-mono text-xs" />
                 </div>
-                <div>
-                  <Label className="text-xs">Active Phantom</Label>
-                  <Select value={pbSelectedPhantom} onValueChange={setPbSelectedPhantom}>
-                    <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {phantomConfigs.map(p => (
-                        <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                {pbPhantoms.length > 0 && (
+                  <div>
+                    <Label className="text-xs">Active Phantom</Label>
+                    <Select value={pbSelectedPhantom} onValueChange={setPbSelectedPhantom}>
+                      <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {pbPhantoms.map(p => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium">Auto-sync</p>
-                    <p className="text-xs text-muted-foreground">Automatically import leads on schedule</p>
+                    <p className="text-xs text-muted-foreground">Import leads on schedule</p>
                   </div>
                   <Switch checked={pbAutoSync} onCheckedChange={setPbAutoSync} />
                 </div>
@@ -173,43 +335,39 @@ export default function IntegrationsPage() {
                   </div>
                 )}
                 <div className="flex gap-2">
-                  <Button size="sm" className="gap-1.5" onClick={handlePbSync} disabled={pbSyncing}>
+                  <Button size="sm" className="gap-1.5" onClick={handlePbSync} disabled={pbSyncing || !pbConnected}>
                     <RefreshCw className={`w-3.5 h-3.5 ${pbSyncing ? "animate-spin" : ""}`} /> {pbSyncing ? "Syncing..." : "Sync Now"}
                   </Button>
-                  <Button size="sm" variant={pbConnected ? "destructive" : "default"} onClick={() => { setPbConnected(!pbConnected); toast.success(pbConnected ? "Disconnected" : "Connected"); }}>
+                  <Button size="sm" variant={pbConnected ? "destructive" : "default"}
+                    onClick={pbConnected ? handlePbDisconnect : handlePbConnect}>
                     {pbConnected ? "Disconnect" : "Connect"}
                   </Button>
                 </div>
               </div>
             </div>
 
-            {/* Sync History */}
             <div className="lg:col-span-2 glass rounded-xl p-6">
-              <h3 className="font-display font-semibold mb-4 flex items-center gap-2">
-                <Clock className="w-4 h-4" /> Sync History
-              </h3>
+              <h3 className="font-display font-semibold mb-4 flex items-center gap-2"><Clock className="w-4 h-4" /> Sync History</h3>
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-border">
-                      <th className="text-left px-3 py-2 text-xs font-medium text-muted-foreground uppercase">Timestamp</th>
-                      <th className="text-left px-3 py-2 text-xs font-medium text-muted-foreground uppercase">Phantom</th>
-                      <th className="text-left px-3 py-2 text-xs font-medium text-muted-foreground uppercase">Leads</th>
-                      <th className="text-left px-3 py-2 text-xs font-medium text-muted-foreground uppercase">Duration</th>
-                      <th className="text-left px-3 py-2 text-xs font-medium text-muted-foreground uppercase">Status</th>
+                      {["Timestamp", "Source", "Leads", "Duration", "Status"].map(h => (
+                        <th key={h} className="text-left px-3 py-2 text-xs font-medium text-muted-foreground uppercase">{h}</th>
+                      ))}
                     </tr>
                   </thead>
                   <tbody>
-                    {integrationSyncLogs.map((log) => (
+                    {syncLogs.length === 0 ? (
+                      <tr><td colSpan={5} className="px-3 py-6 text-center text-sm text-muted-foreground">No syncs yet</td></tr>
+                    ) : syncLogs.map((log) => (
                       <tr key={log.id} className="border-b border-border/50 hover:bg-muted/30">
                         <td className="px-3 py-2.5 text-sm">{new Date(log.timestamp).toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</td>
                         <td className="px-3 py-2.5 text-sm">{log.source}</td>
-                        <td className="px-3 py-2.5 text-sm font-medium">{log.leadsCount}</td>
-                        <td className="px-3 py-2.5 text-sm text-muted-foreground">{log.duration}</td>
+                        <td className="px-3 py-2.5 text-sm font-medium">{log.leads_count}</td>
+                        <td className="px-3 py-2.5 text-sm text-muted-foreground">{log.duration || "—"}</td>
                         <td className="px-3 py-2.5">
-                          <Badge variant={log.status === "success" ? "default" : log.status === "partial" ? "secondary" : "destructive"} className="text-xs">
-                            {log.status}
-                          </Badge>
+                          <Badge variant={log.status === "success" ? "default" : log.status === "partial" ? "secondary" : "destructive"} className="text-xs">{log.status}</Badge>
                         </td>
                       </tr>
                     ))}
@@ -223,7 +381,6 @@ export default function IntegrationsPage() {
         {/* WHATSAPP */}
         <TabsContent value="whatsapp">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Metrics */}
             <div className="lg:col-span-3 grid grid-cols-2 sm:grid-cols-5 gap-3">
               {[
                 { label: "Total Sent", value: waMetrics.totalSent.toLocaleString(), icon: Send },
@@ -233,44 +390,30 @@ export default function IntegrationsPage() {
                 { label: "Reply Rate", value: `${waMetrics.replyRate}%`, icon: Reply },
               ].map((m) => (
                 <div key={m.label} className="glass rounded-xl p-4">
-                  <div className="flex items-center gap-2 mb-1">
-                    <m.icon className="w-3.5 h-3.5 text-muted-foreground" />
-                    <span className="text-xs text-muted-foreground">{m.label}</span>
-                  </div>
+                  <div className="flex items-center gap-2 mb-1"><m.icon className="w-3.5 h-3.5 text-muted-foreground" /><span className="text-xs text-muted-foreground">{m.label}</span></div>
                   <p className="font-display font-bold text-lg">{m.value}</p>
                 </div>
               ))}
             </div>
 
-            {/* Config */}
             <div className="glass rounded-xl p-6">
-              <h3 className="font-display font-semibold mb-4 flex items-center gap-2">
-                <Wifi className="w-4 h-4" /> Connection
-              </h3>
+              <h3 className="font-display font-semibold mb-4 flex items-center gap-2"><Wifi className="w-4 h-4" /> Connection</h3>
               <div className="space-y-4">
                 <div>
                   <Label className="text-xs">Business Phone Number</Label>
-                  <Input value={waNumber} onChange={e => setWaNumber(e.target.value)} className="mt-1" />
+                  <Input value={waNumber} onChange={e => setWaNumber(e.target.value)} placeholder="+256700000000" className="mt-1" />
                 </div>
-                <div>
-                  <p className="text-sm font-medium mb-2">Device Link</p>
-                  <div className="w-32 h-32 rounded-lg bg-muted flex items-center justify-center mx-auto">
-                    <QrCode className="w-16 h-16 text-muted-foreground/30" />
-                  </div>
-                  <p className="text-xs text-muted-foreground text-center mt-2">Scan to link WhatsApp device</p>
-                </div>
-                <Button size="sm" variant={waConnected ? "destructive" : "default"} onClick={() => { setWaConnected(!waConnected); toast.success(waConnected ? "WhatsApp disconnected" : "WhatsApp connected"); }}>
+                <p className="text-xs text-muted-foreground">WA_PHONE_NUMBER_ID and WA_ACCESS_TOKEN are set via Supabase secrets — not stored in the browser.</p>
+                <Button size="sm" variant={waConnected ? "destructive" : "default"}
+                  onClick={waConnected ? handleWaDisconnect : handleWaConnect}>
                   {waConnected ? "Disconnect" : "Connect"}
                 </Button>
               </div>
             </div>
 
-            {/* Rate Limit + Delivery Log */}
             <div className="lg:col-span-2 space-y-4">
               <div className="glass rounded-xl p-6">
-                <h3 className="font-display font-semibold mb-3 flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4" /> Rate Limit
-                </h3>
+                <h3 className="font-display font-semibold mb-3 flex items-center gap-2"><AlertTriangle className="w-4 h-4" /> Rate Limit</h3>
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Messages used today</span>
@@ -280,42 +423,13 @@ export default function IntegrationsPage() {
                   <p className="text-xs text-muted-foreground">{waMetrics.limit - waMetrics.sentToday} messages remaining • Resets at midnight UTC</p>
                 </div>
               </div>
-
-              <div className="glass rounded-xl p-6">
-                <h3 className="font-display font-semibold mb-3 flex items-center gap-2">
-                  <Activity className="w-4 h-4" /> Recent Delivery Log
-                </h3>
-                <div className="space-y-2">
-                  {[
-                    { to: "Sarah Chen", time: "2 min ago", status: "read" },
-                    { to: "Marcus Williams", time: "15 min ago", status: "delivered" },
-                    { to: "Omar Hassan", time: "1 hr ago", status: "sent" },
-                    { to: "James Rodriguez", time: "2 hrs ago", status: "replied" },
-                    { to: "Elena Vasquez", time: "3 hrs ago", status: "read" },
-                    { to: "Raj Kapoor", time: "5 hrs ago", status: "delivered" },
-                    { to: "Lisa Park", time: "6 hrs ago", status: "failed" },
-                    { to: "David Kim", time: "7 hrs ago", status: "read" },
-                  ].map((entry, i) => (
-                    <div key={i} className="flex items-center justify-between py-1.5 border-b border-border/30 last:border-0">
-                      <div>
-                        <p className="text-sm font-medium">{entry.to}</p>
-                        <p className="text-xs text-muted-foreground">{entry.time}</p>
-                      </div>
-                      <Badge variant={entry.status === "failed" ? "destructive" : entry.status === "replied" ? "default" : "secondary"} className="text-xs capitalize">
-                        {entry.status}
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
-              </div>
             </div>
           </div>
         </TabsContent>
 
-        {/* ZOHO MAIL */}
+        {/* ZOHO */}
         <TabsContent value="zoho">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Metrics */}
             <div className="lg:col-span-3 grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
                 { label: "Total Sent", value: zohoMetrics.totalSent.toLocaleString(), icon: Send },
@@ -324,98 +438,51 @@ export default function IntegrationsPage() {
                 { label: "Bounce Rate", value: `${zohoMetrics.bounceRate}%`, icon: AlertTriangle },
               ].map((m) => (
                 <div key={m.label} className="glass rounded-xl p-4">
-                  <div className="flex items-center gap-2 mb-1">
-                    <m.icon className="w-3.5 h-3.5 text-muted-foreground" />
-                    <span className="text-xs text-muted-foreground">{m.label}</span>
-                  </div>
+                  <div className="flex items-center gap-2 mb-1"><m.icon className="w-3.5 h-3.5 text-muted-foreground" /><span className="text-xs text-muted-foreground">{m.label}</span></div>
                   <p className="font-display font-bold text-lg">{m.value}</p>
                 </div>
               ))}
             </div>
 
-            {/* SMTP Config */}
             <div className="glass rounded-xl p-6">
-              <h3 className="font-display font-semibold mb-4 flex items-center gap-2">
-                <Server className="w-4 h-4" /> SMTP Configuration
-              </h3>
+              <h3 className="font-display font-semibold mb-4 flex items-center gap-2"><Server className="w-4 h-4" /> SMTP Configuration</h3>
               <div className="space-y-3">
-                <div>
-                  <Label className="text-xs">SMTP Host</Label>
-                  <Input value={zohoHost} onChange={e => setZohoHost(e.target.value)} className="mt-1 font-mono text-xs" />
-                </div>
-                <div>
-                  <Label className="text-xs">Port</Label>
-                  <Input value={zohoPort} onChange={e => setZohoPort(e.target.value)} className="mt-1 font-mono text-xs" />
-                </div>
+                <div><Label className="text-xs">SMTP Host</Label><Input value={zohoHost} onChange={e => setZohoHost(e.target.value)} className="mt-1 font-mono text-xs" /></div>
+                <div><Label className="text-xs">Port</Label><Input value={zohoPort} onChange={e => setZohoPort(e.target.value)} className="mt-1 font-mono text-xs" /></div>
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium">TLS / SSL</p>
-                    <p className="text-xs text-muted-foreground">Encrypt connection</p>
-                  </div>
+                  <div><p className="text-sm font-medium">TLS / SSL</p><p className="text-xs text-muted-foreground">Encrypt connection</p></div>
                   <Switch checked={zohoTls} onCheckedChange={setZohoTls} />
                 </div>
-                <div>
-                  <Label className="text-xs">From Email</Label>
-                  <Input value={zohoEmail} onChange={e => setZohoEmail(e.target.value)} className="mt-1" />
-                </div>
+                <div><Label className="text-xs">From Email</Label><Input value={zohoEmail} onChange={e => setZohoEmail(e.target.value)} className="mt-1" /></div>
+                <div><Label className="text-xs">App Password</Label><Input type="password" value={zohoPassword} onChange={e => setZohoPassword(e.target.value)} placeholder="Set via Supabase secrets" className="mt-1" disabled /></div>
+                <p className="text-xs text-muted-foreground">ZOHO_PASSWORD is set via <code>supabase secrets set</code> — never stored in browser.</p>
                 <div className="flex gap-2">
-                  <Button size="sm" className="gap-1.5" onClick={handleTestZoho}>
-                    <Zap className="w-3.5 h-3.5" /> Test Connection
-                  </Button>
-                  <Button size="sm" variant={zohoConnected ? "destructive" : "default"} onClick={() => { setZohoConnected(!zohoConnected); toast.success(zohoConnected ? "Disconnected" : "Connected"); }}>
+                  <Button size="sm" className="gap-1.5" onClick={handleTestZoho} disabled={!zohoConnected}><Zap className="w-3.5 h-3.5" /> Test Connection</Button>
+                  <Button size="sm" variant={zohoConnected ? "destructive" : "default"} onClick={zohoConnected ? handleZohoDisconnect : handleZohoConnect}>
                     {zohoConnected ? "Disconnect" : "Connect"}
                   </Button>
                 </div>
               </div>
             </div>
 
-            {/* Domain Verification + Info */}
             <div className="lg:col-span-2 space-y-4">
               <div className="glass rounded-xl p-6">
-                <h3 className="font-display font-semibold mb-3 flex items-center gap-2">
-                  <Shield className="w-4 h-4" /> Domain Verification
-                </h3>
+                <h3 className="font-display font-semibold mb-3 flex items-center gap-2"><Shield className="w-4 h-4" /> Domain Verification</h3>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium">regent.io</p>
-                      <p className="text-xs text-muted-foreground">Primary sending domain</p>
-                    </div>
-                    <Badge variant="default" className="gap-1 text-xs">
-                      <CheckCircle className="w-3 h-3" /> Verified
+                    <div><p className="text-sm font-medium">{zohoEmail ? zohoEmail.split("@")[1] : "Not configured"}</p><p className="text-xs text-muted-foreground">Primary sending domain</p></div>
+                    <Badge variant={zohoConnected ? "default" : "secondary"} className="gap-1 text-xs">
+                      {zohoConnected ? <><CheckCircle className="w-3 h-3" /> Connected</> : "Not set"}
                     </Badge>
                   </div>
                   <div className="grid grid-cols-3 gap-3">
-                    {[
-                      { label: "SPF", status: "Pass" },
-                      { label: "DKIM", status: "Pass" },
-                      { label: "DMARC", status: "Pass" },
-                    ].map((dns) => (
+                    {[{ label: "SPF" }, { label: "DKIM" }, { label: "DMARC" }].map((dns) => (
                       <div key={dns.label} className="p-3 rounded-lg bg-muted/50 text-center">
                         <p className="text-xs text-muted-foreground">{dns.label}</p>
-                        <p className="text-sm font-semibold text-accent">{dns.status}</p>
+                        <p className="text-sm font-semibold text-muted-foreground">—</p>
                       </div>
                     ))}
                   </div>
-                </div>
-              </div>
-
-              <div className="glass rounded-xl p-6">
-                <h3 className="font-display font-semibold mb-3 flex items-center gap-2">
-                  <Activity className="w-4 h-4" /> Email Performance (7 days)
-                </h3>
-                <div className="grid grid-cols-2 gap-4">
-                  {[
-                    { label: "Emails Sent", value: "584" },
-                    { label: "Opened", value: "249 (42.8%)" },
-                    { label: "Bounced", value: "8 (1.4%)" },
-                    { label: "Unsubscribed", value: "2 (0.3%)" },
-                  ].map((stat) => (
-                    <div key={stat.label} className="p-3 rounded-lg bg-muted/50">
-                      <p className="text-xs text-muted-foreground">{stat.label}</p>
-                      <p className="text-sm font-semibold">{stat.value}</p>
-                    </div>
-                  ))}
                 </div>
               </div>
             </div>
