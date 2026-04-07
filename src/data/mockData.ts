@@ -13,8 +13,8 @@ export interface Lead {
   score: number;
   status: LeadStatus;
   tags: string[];
-  createdAt: string;
-  lastContacted?: string;
+  created_at: string;
+  last_contacted?: string;
   linkedinUrl?: string;
 }
 
@@ -23,12 +23,12 @@ export interface Campaign {
   name: string;
   channel: CampaignChannel;
   status: 'draft' | 'active' | 'paused' | 'completed';
-  leadsCount: number;
+  leads_count: number;
   sent: number;
   delivered: number;
   replied: number;
   conversions: number;
-  createdAt: string;
+  created_at: string;
 }
 
 export interface Message {
@@ -67,26 +67,26 @@ export interface Activity {
 }
 
 export const leads: Lead[] = [
-  { id: '1', name: 'Sarah Chen', business: 'TechVault Solutions', email: 'sarah@techvault.io', phone: '+1-555-0101', source: 'phantombuster', score: 92, status: 'interested', tags: ['enterprise', 'high-value'], createdAt: '2026-03-15', lastContacted: '2026-03-30', linkedinUrl: 'https://linkedin.com/in/sarahchen' },
-  { id: '2', name: 'Marcus Williams', business: 'GrowthStack Inc', email: 'marcus@growthstack.com', phone: '+1-555-0102', source: 'linkedin', score: 85, status: 'contacted', tags: ['startup', 'series-a'], createdAt: '2026-03-18', lastContacted: '2026-03-28', linkedinUrl: 'https://linkedin.com/in/marcuswilliams' },
-  { id: '3', name: 'Amara Osei', business: 'BrightPath Digital', email: 'amara@brightpath.co', phone: '+1-555-0103', source: 'referral', score: 78, status: 'follow-up', tags: ['agency', 'mid-market'], createdAt: '2026-03-20', lastContacted: '2026-03-29' },
-  { id: '4', name: 'James Rodriguez', business: 'Apex Ventures', email: 'james@apexventures.com', phone: '+1-555-0104', source: 'phantombuster', score: 95, status: 'closed', tags: ['enterprise', 'high-value', 'won'], createdAt: '2026-03-10', lastContacted: '2026-04-01', linkedinUrl: 'https://linkedin.com/in/jamesrodriguez' },
-  { id: '5', name: 'Priya Patel', business: 'NovaBrand Studio', email: 'priya@novabrand.co', phone: '+1-555-0105', source: 'website', score: 70, status: 'new', tags: ['smb'], createdAt: '2026-03-25' },
-  { id: '6', name: 'David Kim', business: 'CloudNine SaaS', email: 'david@cloudnine.io', phone: '+1-555-0106', source: 'cold-outreach', score: 65, status: 'new', tags: ['saas', 'startup'], createdAt: '2026-03-26' },
-  { id: '7', name: 'Elena Vasquez', business: 'Meridian Health', email: 'elena@meridianhealth.com', phone: '+1-555-0107', source: 'linkedin', score: 88, status: 'interested', tags: ['healthcare', 'enterprise'], createdAt: '2026-03-12', lastContacted: '2026-03-31', linkedinUrl: 'https://linkedin.com/in/elenavasquez' },
-  { id: '8', name: 'Omar Hassan', business: 'FinEdge Capital', email: 'omar@finedge.co', phone: '+1-555-0108', source: 'phantombuster', score: 82, status: 'contacted', tags: ['fintech', 'high-value'], createdAt: '2026-03-19', lastContacted: '2026-03-27', linkedinUrl: 'https://linkedin.com/in/omarhassan' },
-  { id: '9', name: 'Lisa Park', business: 'EcoVenture Labs', email: 'lisa@ecoventure.com', phone: '+1-555-0109', source: 'referral', score: 74, status: 'follow-up', tags: ['sustainability'], createdAt: '2026-03-22', lastContacted: '2026-03-30' },
-  { id: '10', name: 'Thomas Burke', business: 'Atlas Logistics', email: 'thomas@atlaslog.com', phone: '+1-555-0110', source: 'website', score: 60, status: 'new', tags: ['logistics'], createdAt: '2026-03-28' },
-  { id: '11', name: 'Natasha Romanova', business: 'Stellar AI', email: 'natasha@stellarai.io', phone: '+1-555-0111', source: 'phantombuster', score: 91, status: 'closed', tags: ['ai', 'enterprise', 'won'], createdAt: '2026-03-08', lastContacted: '2026-03-29', linkedinUrl: 'https://linkedin.com/in/natasharomanova' },
-  { id: '12', name: 'Raj Kapoor', business: 'UrbanPulse Media', email: 'raj@urbanpulse.co', phone: '+1-555-0112', source: 'linkedin', score: 77, status: 'contacted', tags: ['media', 'mid-market'], createdAt: '2026-03-21', lastContacted: '2026-03-28' },
+  { id: '1', name: 'Sarah Chen', business: 'TechVault Solutions', email: 'sarah@techvault.io', phone: '+1-555-0101', source: 'phantombuster', score: 92, status: 'interested', tags: ['enterprise', 'high-value'], created_at: '2026-03-15', last_contacted: '2026-03-30', linkedinUrl: 'https://linkedin.com/in/sarahchen' },
+  { id: '2', name: 'Marcus Williams', business: 'GrowthStack Inc', email: 'marcus@growthstack.com', phone: '+1-555-0102', source: 'linkedin', score: 85, status: 'contacted', tags: ['startup', 'series-a'], created_at: '2026-03-18', last_contacted: '2026-03-28', linkedinUrl: 'https://linkedin.com/in/marcuswilliams' },
+  { id: '3', name: 'Amara Osei', business: 'BrightPath Digital', email: 'amara@brightpath.co', phone: '+1-555-0103', source: 'referral', score: 78, status: 'follow-up', tags: ['agency', 'mid-market'], created_at: '2026-03-20', last_contacted: '2026-03-29' },
+  { id: '4', name: 'James Rodriguez', business: 'Apex Ventures', email: 'james@apexventures.com', phone: '+1-555-0104', source: 'phantombuster', score: 95, status: 'closed', tags: ['enterprise', 'high-value', 'won'], created_at: '2026-03-10', last_contacted: '2026-04-01', linkedinUrl: 'https://linkedin.com/in/jamesrodriguez' },
+  { id: '5', name: 'Priya Patel', business: 'NovaBrand Studio', email: 'priya@novabrand.co', phone: '+1-555-0105', source: 'website', score: 70, status: 'new', tags: ['smb'], created_at: '2026-03-25' },
+  { id: '6', name: 'David Kim', business: 'CloudNine SaaS', email: 'david@cloudnine.io', phone: '+1-555-0106', source: 'cold-outreach', score: 65, status: 'new', tags: ['saas', 'startup'], created_at: '2026-03-26' },
+  { id: '7', name: 'Elena Vasquez', business: 'Meridian Health', email: 'elena@meridianhealth.com', phone: '+1-555-0107', source: 'linkedin', score: 88, status: 'interested', tags: ['healthcare', 'enterprise'], created_at: '2026-03-12', last_contacted: '2026-03-31', linkedinUrl: 'https://linkedin.com/in/elenavasquez' },
+  { id: '8', name: 'Omar Hassan', business: 'FinEdge Capital', email: 'omar@finedge.co', phone: '+1-555-0108', source: 'phantombuster', score: 82, status: 'contacted', tags: ['fintech', 'high-value'], created_at: '2026-03-19', last_contacted: '2026-03-27', linkedinUrl: 'https://linkedin.com/in/omarhassan' },
+  { id: '9', name: 'Lisa Park', business: 'EcoVenture Labs', email: 'lisa@ecoventure.com', phone: '+1-555-0109', source: 'referral', score: 74, status: 'follow-up', tags: ['sustainability'], created_at: '2026-03-22', last_contacted: '2026-03-30' },
+  { id: '10', name: 'Thomas Burke', business: 'Atlas Logistics', email: 'thomas@atlaslog.com', phone: '+1-555-0110', source: 'website', score: 60, status: 'new', tags: ['logistics'], created_at: '2026-03-28' },
+  { id: '11', name: 'Natasha Romanova', business: 'Stellar AI', email: 'natasha@stellarai.io', phone: '+1-555-0111', source: 'phantombuster', score: 91, status: 'closed', tags: ['ai', 'enterprise', 'won'], created_at: '2026-03-08', last_contacted: '2026-03-29', linkedinUrl: 'https://linkedin.com/in/natasharomanova' },
+  { id: '12', name: 'Raj Kapoor', business: 'UrbanPulse Media', email: 'raj@urbanpulse.co', phone: '+1-555-0112', source: 'linkedin', score: 77, status: 'contacted', tags: ['media', 'mid-market'], created_at: '2026-03-21', last_contacted: '2026-03-28' },
 ];
 
 export const campaigns: Campaign[] = [
-  { id: '1', name: 'Q1 Enterprise Outreach', channel: 'both', status: 'active', leadsCount: 45, sent: 38, delivered: 35, replied: 12, conversions: 4, createdAt: '2026-03-01' },
-  { id: '2', name: 'Startup Growth Sprint', channel: 'email', status: 'active', leadsCount: 120, sent: 95, delivered: 88, replied: 22, conversions: 7, createdAt: '2026-03-10' },
-  { id: '3', name: 'LinkedIn Warm Leads', channel: 'whatsapp', status: 'completed', leadsCount: 30, sent: 30, delivered: 28, replied: 15, conversions: 6, createdAt: '2026-02-20' },
-  { id: '4', name: 'Healthcare Vertical Push', channel: 'email', status: 'draft', leadsCount: 60, sent: 0, delivered: 0, replied: 0, conversions: 0, createdAt: '2026-03-28' },
-  { id: '5', name: 'Re-engagement Wave', channel: 'both', status: 'paused', leadsCount: 85, sent: 40, delivered: 36, replied: 8, conversions: 2, createdAt: '2026-03-15' },
+  { id: '1', name: 'Q1 Enterprise Outreach', channel: 'both', status: 'active', leads_count: 45, sent: 38, delivered: 35, replied: 12, conversions: 4, created_at: '2026-03-01' },
+  { id: '2', name: 'Startup Growth Sprint', channel: 'email', status: 'active', leads_count: 120, sent: 95, delivered: 88, replied: 22, conversions: 7, created_at: '2026-03-10' },
+  { id: '3', name: 'LinkedIn Warm Leads', channel: 'whatsapp', status: 'completed', leads_count: 30, sent: 30, delivered: 28, replied: 15, conversions: 6, created_at: '2026-02-20' },
+  { id: '4', name: 'Healthcare Vertical Push', channel: 'email', status: 'draft', leads_count: 60, sent: 0, delivered: 0, replied: 0, conversions: 0, created_at: '2026-03-28' },
+  { id: '5', name: 'Re-engagement Wave', channel: 'both', status: 'paused', leads_count: 85, sent: 40, delivered: 36, replied: 8, conversions: 2, created_at: '2026-03-15' },
 ];
 
 export const messages: Message[] = [
@@ -144,7 +144,7 @@ export interface IntegrationSyncLog {
   id: string;
   timestamp: string;
   source: string;
-  leadsCount: number;
+  leads_count: number;
   status: 'success' | 'partial' | 'failed';
   duration: string;
 }
@@ -164,11 +164,11 @@ export const phantomConfigs: PhantomConfig[] = [
 ];
 
 export const integrationSyncLogs: IntegrationSyncLog[] = [
-  { id: 's1', timestamp: '2026-04-06T10:30:00', source: 'LinkedIn Sales Navigator Search', leadsCount: 15, status: 'success', duration: '2m 14s' },
-  { id: 's2', timestamp: '2026-04-05T10:30:00', source: 'LinkedIn Profile Scraper', leadsCount: 8, status: 'success', duration: '1m 42s' },
-  { id: 's3', timestamp: '2026-04-04T10:30:00', source: 'LinkedIn Sales Navigator Search', leadsCount: 22, status: 'success', duration: '3m 05s' },
-  { id: 's4', timestamp: '2026-04-03T10:30:00', source: 'LinkedIn Sales Navigator Search', leadsCount: 3, status: 'partial', duration: '4m 30s' },
-  { id: 's5', timestamp: '2026-04-02T10:30:00', source: 'Google Maps Scraper', leadsCount: 0, status: 'failed', duration: '0m 12s' },
+  { id: 's1', timestamp: '2026-04-06T10:30:00', source: 'LinkedIn Sales Navigator Search', leads_count: 15, status: 'success', duration: '2m 14s' },
+  { id: 's2', timestamp: '2026-04-05T10:30:00', source: 'LinkedIn Profile Scraper', leads_count: 8, status: 'success', duration: '1m 42s' },
+  { id: 's3', timestamp: '2026-04-04T10:30:00', source: 'LinkedIn Sales Navigator Search', leads_count: 22, status: 'success', duration: '3m 05s' },
+  { id: 's4', timestamp: '2026-04-03T10:30:00', source: 'LinkedIn Sales Navigator Search', leads_count: 3, status: 'partial', duration: '4m 30s' },
+  { id: 's5', timestamp: '2026-04-02T10:30:00', source: 'Google Maps Scraper', leads_count: 0, status: 'failed', duration: '0m 12s' },
 ];
 
 export interface Notification {

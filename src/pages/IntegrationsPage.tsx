@@ -206,7 +206,7 @@ export default function IntegrationsPage() {
                       <tr key={i} className="border-b border-border/50 hover:bg-muted/30">
                         <td className="px-3 py-2.5 text-sm">{log.timestamp}</td>
                         <td className="px-3 py-2.5 text-sm">{log.source}</td>
-                        <td className="px-3 py-2.5 text-sm font-medium">{log.leadsCount}</td>
+                        <td className="px-3 py-2.5 text-sm font-medium">{log.leads_count}</td>
                         <td className="px-3 py-2.5 text-sm text-muted-foreground">{log.duration}</td>
                         <td className="px-3 py-2.5">
                           <Badge variant={log.status === "success" ? "default" : log.status === "partial" ? "secondary" : "destructive"} className="text-xs">{log.status}</Badge>

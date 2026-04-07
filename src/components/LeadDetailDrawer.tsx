@@ -24,8 +24,8 @@ export function LeadDetailDrawer({ lead, open, onOpenChange, onStatusChange, onD
   const statuses: LeadStatus[] = ['new', 'contacted', 'follow-up', 'interested', 'closed'];
 
   const mockTimeline = [
-    { action: 'Lead created', date: lead.createdAt, icon: '➕' },
-    ...(lead.lastContacted ? [{ action: 'Last contacted', date: lead.lastContacted, icon: '📤' }] : []),
+    { action: 'Lead created', date: lead.created_at, icon: '➕' },
+    ...(lead.last_contacted ? [{ action: 'Last contacted', date: lead.last_contacted, icon: '📤' }] : []),
     ...leadMessages.map(m => ({
       action: `${m.channel === 'whatsapp' ? 'WhatsApp' : 'Email'} — ${m.status}`,
       date: m.sentAt.split('T')[0],
@@ -63,7 +63,7 @@ export function LeadDetailDrawer({ lead, open, onOpenChange, onStatusChange, onD
             )}
             <div className="flex items-center gap-3 text-sm">
               <Calendar className="w-4 h-4 text-muted-foreground shrink-0" />
-              <span className="text-muted-foreground">Added {lead.createdAt}</span>
+              <span className="text-muted-foreground">Added {lead.created_at}</span>
             </div>
           </div>
 

@@ -63,7 +63,7 @@ export default function CampaignsPage() {
                   </button>
                 </div>
                 <div className="grid grid-cols-2 gap-3 mb-4">
-                  <div className="bg-muted/50 rounded-lg p-2.5 text-center"><p className="text-lg font-bold">{campaign.leadsCount}</p><p className="text-xs text-muted-foreground">Leads</p></div>
+                  <div className="bg-muted/50 rounded-lg p-2.5 text-center"><p className="text-lg font-bold">{campaign.leads_count}</p><p className="text-xs text-muted-foreground">Leads</p></div>
                   <div className="bg-muted/50 rounded-lg p-2.5 text-center"><p className="text-lg font-bold">{campaign.sent}</p><p className="text-xs text-muted-foreground">Sent</p></div>
                 </div>
                 <div className="space-y-2">

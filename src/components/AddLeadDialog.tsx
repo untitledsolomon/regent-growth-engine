@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Lead, LeadSource, LeadStatus } from "@/data/mockData";
+import { supabase } from "@/lib/supabase";
+import { useOrg } from "@/contexts/orgContext";
 
 interface AddLeadDialogProps {
   open: boolean;
@@ -25,6 +27,7 @@ export function AddLeadDialog({ open, onOpenChange, onAdd, editLead, onUpdate }:
     editLead ? { ...editLead, tags: editLead.tags.join(', ') } : emptyForm
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const {orgId} = useOrg();
 
   const resetForm = () => { setForm(emptyForm); setErrors({}); };
 
@@ -39,11 +42,11 @@ export function AddLeadDialog({ open, onOpenChange, onAdd, editLead, onUpdate }:
     return Object.keys(e).length === 0;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!validate()) return;
     const tags = form.tags.split(',').map(t => t.trim()).filter(Boolean);
-    const lead: Lead = {
-      id: editLead?.id || crypto.randomUUID(),
+    const payload = {
+      org_id: orgId,
       name: form.name.trim(),
       business: form.business.trim(),
       email: form.email.trim(),
@@ -52,21 +55,36 @@ export function AddLeadDialog({ open, onOpenChange, onAdd, editLead, onUpdate }:
       score: Number(form.score),
       status: form.status,
       tags,
-      createdAt: editLead?.createdAt || new Date().toISOString().split('T')[0],
-      lastContacted: editLead?.lastContacted,
+      created_at: editLead?.created_at || new Date().toISOString().split('T')[0],
+      last_contacted: editLead?.last_contacted,
     };
-    if (isEdit && onUpdate) onUpdate(lead);
-    else onAdd(lead);
+    let error;
+    if (isEdit) {
+      const {error: updateError} = await supabase
+        .from("leads")
+        .update(payload)
+        .eq("id", editLead.id);
+
+      error = updateError;
+    } else {
+      const {error: insertError} = await supabase
+        .from("leads")
+        .insert([payload]);
+
+        error = insertError
+    }
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    // Sync form when editLead changes
+    if (isEdit && onUpdate) onUpdate({ ...payload, id: editLead.id } as Lead);
+    else if (onAdd) onAdd({ ...payload, id: crypto.randomUUID() } as Lead);
+
     resetForm();
     onOpenChange(false);
-  };
-
-  // Sync form when editLead changes
-  const [prevEdit, setPrevEdit] = useState<Lead | null | undefined>(null);
-  if (editLead !== prevEdit) {
-    setPrevEdit(editLead);
-    if (editLead) setForm({ ...editLead, tags: editLead.tags.join(', ') });
-    else resetForm();
   }
 
   return (

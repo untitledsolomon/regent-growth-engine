@@ -146,7 +146,7 @@ export function CSVImportDialog({ open, onOpenChange, onImport }: CSVImportDialo
         score: Math.floor(Math.random() * 40) + 50,
         status: 'new' as const,
         tags: isPBFormat ? ['phantombuster'] : [],
-        createdAt: new Date().toISOString().split('T')[0],
+        created_at: new Date().toISOString().split('T')[0],
       };
     }).filter(l => l.name && l.email);
 

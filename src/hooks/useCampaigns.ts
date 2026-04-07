@@ -17,7 +17,7 @@ export function useCampaigns() {
       try {
         const { data, error } = await supabase.from('campaigns').select('*').order('created_at', { ascending: false });
         if (error) throw error;
-        setCampaigns(data?.length ? data : mockCampaigns);
+        setCampaigns(data?.length ? data : data);
       } catch (e: any) {
         setError(e.message);
         setCampaigns(mockCampaigns);

@@ -1,11 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Campaign, CampaignChannel, leads, templates } from "@/data/mockData";
+import { Campaign, CampaignChannel, templates } from "@/data/mockData";
+import { useLeads } from "@/hooks/useLeads";import { supabase } from "@/lib/supabase";
+import { getUserOrg } from "@/lib/org";
+import { useOrg } from "@/contexts/orgContext";
 
 interface CreateCampaignDialogProps {
   open: boolean;
@@ -17,12 +20,14 @@ const sourceOptions = ['phantombuster', 'linkedin', 'referral', 'website', 'cold
 const statusOptions = ['new', 'contacted', 'follow-up', 'interested'];
 
 export function CreateCampaignDialog({ open, onOpenChange, onAdd }: CreateCampaignDialogProps) {
+  const {leads} = useLeads();
   const [name, setName] = useState('');
   const [channel, setChannel] = useState<CampaignChannel>('email');
   const [selectedSources, setSelectedSources] = useState<string[]>([]);
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const {orgId} = useOrg();
 
   const toggleSource = (s: string) => setSelectedSources(prev => prev.includes(s) ? prev.filter(x => x !== s) : [...prev, s]);
   const toggleStatus = (s: string) => setSelectedStatuses(prev => prev.includes(s) ? prev.filter(x => x !== s) : [...prev, s]);
@@ -35,24 +40,70 @@ export function CreateCampaignDialog({ open, onOpenChange, onAdd }: CreateCampai
 
   const filteredTemplates = templates.filter(t => t.channel === channel || t.channel === 'both');
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const e: Record<string, string> = {};
     if (!name.trim()) e.name = 'Campaign name is required';
     if (matchingLeads.length === 0) e.audience = 'No leads match your criteria';
     setErrors(e);
     if (Object.keys(e).length > 0) return;
 
+    const { data: campaignData, error: campaignError} = await supabase
+      .from("campaigns")
+      .insert([
+        {
+          org_id: orgId,
+          name: name.trim(),
+          channel,
+          status: 'draft',
+          leads_count: matchingLeads.length,
+          sent: 0, delivered: 0, replied: 0, conversions: 0,
+          created_at: new Date().toISOString().split('T')[0],
+        },
+      ])
+      .select()
+      .single();
+
+    if (campaignError) {
+      console.error(campaignError);
+      return;
+    }
+
+    const campaignId = campaignData.id;
+
+    const campaignLeads = matchingLeads.map((lead) => ({
+      campaign_id: campaignId,
+      lead_id: lead.id,
+    }));
+
+    const {error: linkError} = await supabase
+      .from("campaign_leads")
+      .insert(campaignLeads);
+
+    if (linkError) {
+      console.error(linkError);
+      return;
+    }
+
     const campaign: Campaign = {
-      id: crypto.randomUUID(),
+      id: campaignId,
       name: name.trim(),
       channel,
       status: 'draft',
-      leadsCount: matchingLeads.length,
-      sent: 0, delivered: 0, replied: 0, conversions: 0,
-      createdAt: new Date().toISOString().split('T')[0],
+      leads_count: matchingLeads.length,
+      sent: 0,
+      delivered: 0,
+      replied: 0,
+      conversions: 0,
+      created_at: campaignData.created_at,
     };
+
     onAdd(campaign);
-    setName(''); setChannel('email'); setSelectedSources([]); setSelectedStatuses([]); setSelectedTemplate('');
+
+    setName('');
+    setChannel('email');
+    setSelectedSources([]);
+    setSelectedStatuses([]);
+    setSelectedTemplate('');
     onOpenChange(false);
   };
 

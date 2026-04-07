@@ -15,9 +15,11 @@ export function useLeads() {
         return;
       }
       try {
+        console.log("loading leads")
         const { data, error } = await supabase.from('leads').select('*').order('created_at', { ascending: false });
+        console.log(data)
         if (error) throw error;
-        setLeads(data?.length ? data : mockLeads);
+        setLeads(data?.length ? data : data);
       } catch (e: any) {
         setError(e.message);
         setLeads(mockLeads);

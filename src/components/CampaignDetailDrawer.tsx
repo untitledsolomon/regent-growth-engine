@@ -16,11 +16,11 @@ export function CampaignDetailDrawer({ campaign, open, onOpenChange }: CampaignD
   const deliveryRate = campaign.sent > 0 ? ((campaign.delivered / campaign.sent) * 100).toFixed(1) : '0';
 
   // Mock: assign some leads to campaign
-  const campaignLeads = leads.slice(0, Math.min(campaign.leadsCount, leads.length));
+  const campaignLeads = leads.slice(0, Math.min(campaign.leads_count, leads.length));
   const campaignMessages = allMessages.filter(m => campaignLeads.some(l => l.id === m.leadId));
 
   const metrics = [
-    { label: 'Total Leads', value: campaign.leadsCount, icon: Users, color: 'text-primary' },
+    { label: 'Total Leads', value: campaign.leads_count, icon: Users, color: 'text-primary' },
     { label: 'Sent', value: campaign.sent, icon: Send, color: 'text-regent-sky' },
     { label: 'Replied', value: campaign.replied, icon: Reply, color: 'text-regent-gold' },
     { label: 'Conversions', value: campaign.conversions, icon: Trophy, color: 'text-regent-emerald' },
@@ -39,7 +39,7 @@ export function CampaignDetailDrawer({ campaign, open, onOpenChange }: CampaignD
             <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-muted text-muted-foreground capitalize">{campaign.status}</span>
             <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary capitalize">{campaign.channel} channel</span>
             <span className="flex items-center gap-1 text-xs text-muted-foreground">
-              <Calendar className="w-3 h-3" /> {campaign.createdAt}
+              <Calendar className="w-3 h-3" /> {campaign.created_at}
             </span>
           </div>
 

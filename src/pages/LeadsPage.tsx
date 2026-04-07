@@ -60,7 +60,7 @@ export default function LeadsPage() {
   const handleBulkDelete = () => { setLeadsList(prev => prev.filter(l => !selectedIds.has(l.id))); toast.success(`${selectedIds.size} leads deleted`); setSelectedIds(new Set()); setBulkDeleteOpen(false); };
   const handleExportCSV = () => {
     const headers = ['Name', 'Business', 'Email', 'Phone', 'Source', 'Score', 'Status', 'Tags', 'Created'];
-    const rows = filtered.map(l => [l.name, l.business, l.email, l.phone, l.source, l.score, l.status, l.tags.join(';'), l.createdAt]);
+    const rows = filtered.map(l => [l.name, l.business, l.email, l.phone, l.source, l.score, l.status, l.tags.join(';'), l.created_at]);
     const csv = [headers, ...rows].map(r => r.map(c => `"${c}"`).join(',')).join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);

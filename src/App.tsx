@@ -17,6 +17,7 @@ import SettingsPage from "./pages/SettingsPage";
 import LoginPage from "./pages/LoginPage";
 import OnboardingPage from "./pages/OnboardingPage";
 import NotFound from "./pages/NotFound";
+import { OrgProvider } from "./contexts/orgContext";
 
 const queryClient = new QueryClient();
 
@@ -67,7 +68,9 @@ const App = () => (
         <AuthProvider>
           <WorkspaceProvider>
             <ErrorBoundary>
-              <AppRoutes />
+              <OrgProvider>
+                <AppRoutes />
+              </OrgProvider>
             </ErrorBoundary>
           </WorkspaceProvider>
         </AuthProvider>
