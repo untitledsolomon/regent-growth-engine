@@ -171,6 +171,24 @@ export const integrationSyncLogs: IntegrationSyncLog[] = [
   { id: 's5', timestamp: '2026-04-02T10:30:00', source: 'Google Maps Scraper', leadsCount: 0, status: 'failed', duration: '0m 12s' },
 ];
 
+export interface Notification {
+  id: string;
+  type: 'new_lead' | 'message_reply' | 'sync_complete' | 'campaign_milestone';
+  title: string;
+  body?: string;
+  read: boolean;
+  created_at: string;
+}
+
+export const notifications: Notification[] = [
+  { id: 'n1', type: 'new_lead', title: 'New lead: Sarah Chen from TechVault', body: 'Imported via PhantomBuster', read: false, created_at: '2026-04-07T09:30:00' },
+  { id: 'n2', type: 'message_reply', title: 'Reply from James Rodriguez', body: 'Thanks for the proposal, looks great!', read: false, created_at: '2026-04-07T08:15:00' },
+  { id: 'n3', type: 'sync_complete', title: 'PhantomBuster sync complete', body: '15 new leads imported successfully', read: false, created_at: '2026-04-06T22:00:00' },
+  { id: 'n4', type: 'campaign_milestone', title: 'Q1 Enterprise Outreach hit 50% reply rate', read: true, created_at: '2026-04-06T16:30:00' },
+  { id: 'n5', type: 'new_lead', title: 'New lead: David Kim from CloudNine', body: 'Added manually', read: true, created_at: '2026-04-06T14:00:00' },
+  { id: 'n6', type: 'message_reply', title: 'Reply from Elena Vasquez', body: 'Let\'s schedule a call next week', read: true, created_at: '2026-04-05T11:20:00' },
+];
+
 export const recentActivities: Activity[] = [
   { id: '1', type: 'message_sent', description: 'Message sent to Sarah Chen via WhatsApp', timestamp: '2026-04-01T14:30:00' },
   { id: '2', type: 'status_changed', description: 'James Rodriguez moved to Closed', timestamp: '2026-04-01T12:15:00' },
