@@ -5,14 +5,23 @@ import { ScoreBadge } from "@/components/StatusBadge";
 import { leads as initialLeads, Lead, LeadStatus } from "@/data/mockData";
 import { LeadDetailDrawer } from "@/components/LeadDetailDrawer";
 import { toast } from "sonner";
+import { GripVertical } from "lucide-react";
 
-const stages: { key: LeadStatus; label: string; color: string }[] = [
-  { key: 'new', label: 'New', color: 'border-t-regent-sky' },
-  { key: 'contacted', label: 'Contacted', color: 'border-t-primary' },
-  { key: 'follow-up', label: 'Follow-up', color: 'border-t-regent-gold' },
-  { key: 'interested', label: 'Interested', color: 'border-t-regent-emerald' },
-  { key: 'closed', label: 'Closed', color: 'border-t-accent' },
+const stages: { key: LeadStatus; label: string; dotColor: string }[] = [
+  { key: 'new', label: 'New', dotColor: 'bg-info' },
+  { key: 'contacted', label: 'Contacted', dotColor: 'bg-primary' },
+  { key: 'follow-up', label: 'Follow-up', dotColor: 'bg-warning' },
+  { key: 'interested', label: 'Interested', dotColor: 'bg-success' },
+  { key: 'closed', label: 'Closed', dotColor: 'bg-accent' },
 ];
+
+const sourceBadges: Record<string, { label: string; className: string }> = {
+  phantombuster: { label: 'PHANTOMBUSTER', className: 'bg-primary/10 text-primary' },
+  linkedin: { label: 'LINKEDIN', className: 'bg-info/10 text-info' },
+  referral: { label: 'REFERRAL', className: 'bg-success/10 text-success' },
+  website: { label: 'INBOUND', className: 'bg-warning/10 text-warning' },
+  'cold-outreach': { label: 'OUTBOUND', className: 'bg-accent/10 text-accent' },
+};
 
 export default function PipelinePage() {
   const [pipelineLeads, setPipelineLeads] = useState<Lead[]>(initialLeads);
@@ -40,42 +49,50 @@ export default function PipelinePage() {
       <div className="flex gap-4 overflow-x-auto pb-4">
         {stages.map(stage => {
           const stageLeads = pipelineLeads.filter(l => l.status === stage.key);
+          const totalValue = stageLeads.length * 2500; // mock deal value
           return (
             <div
               key={stage.key}
-              className={`min-w-[260px] flex-1 glass rounded-xl border-t-2 ${stage.color}`}
+              className="min-w-[280px] flex-1 bg-muted/50 rounded-2xl"
               onDragOver={e => e.preventDefault()}
               onDrop={() => handleDrop(stage.key)}
             >
-              <div className="p-4 border-b border-border/50">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-display font-semibold text-sm">{stage.label}</h3>
-                  <span className="px-2 py-0.5 rounded-full bg-muted text-muted-foreground text-xs font-medium">{stageLeads.length}</span>
+              <div className="p-4">
+                <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center gap-2">
+                    <div className={`w-2.5 h-2.5 rounded-full ${stage.dotColor}`} />
+                    <h3 className="font-display font-semibold text-sm">{stage.label}</h3>
+                  </div>
+                  <span className="px-2 py-0.5 rounded-full bg-card text-muted-foreground text-xs font-medium border border-border">{stageLeads.length}</span>
                 </div>
+                <p className="text-xs text-muted-foreground ml-4.5">${totalValue.toLocaleString()} total value</p>
               </div>
-              <div className="p-3 space-y-2 min-h-[300px]">
-                {stageLeads.map(lead => (
-                  <div
-                    key={lead.id}
-                    draggable
-                    onDragStart={() => handleDragStart(lead.id)}
-                    onClick={() => setDetailLead(lead)}
-                    className={`p-3 rounded-lg bg-background border border-border/50 cursor-grab active:cursor-grabbing hover:shadow-md transition-all duration-200 ${draggedLead === lead.id ? 'opacity-50 scale-95' : ''}`}
-                  >
-                    <p className="font-medium text-sm">{lead.name}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">{lead.business}</p>
-                    <div className="mt-2 flex items-center justify-between">
-                      <ScoreBadge score={lead.score} />
-                      <div className="flex gap-1">
-                        {lead.tags.slice(0, 2).map(tag => (
-                          <span key={tag} className="px-1.5 py-0.5 rounded text-[10px] bg-muted text-muted-foreground">{tag}</span>
-                        ))}
+              <div className="px-3 pb-3 space-y-2 min-h-[300px]">
+                {stageLeads.map(lead => {
+                  const badge = sourceBadges[lead.source] || sourceBadges['cold-outreach'];
+                  return (
+                    <div
+                      key={lead.id}
+                      draggable
+                      onDragStart={() => handleDragStart(lead.id)}
+                      onClick={() => setDetailLead(lead)}
+                      className={`p-4 rounded-xl bg-card border border-border cursor-grab active:cursor-grabbing hover:shadow-md transition-all duration-200 ${draggedLead === lead.id ? 'opacity-50 scale-95' : ''}`}
+                    >
+                      <div className="flex items-start justify-between mb-2">
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider ${badge.className}`}>{badge.label}</span>
+                        <GripVertical className="w-3.5 h-3.5 text-muted-foreground/50" />
+                      </div>
+                      <p className="font-semibold text-sm">{lead.name}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{lead.business}</p>
+                      <div className="mt-3 flex items-center justify-between">
+                        <ScoreBadge score={lead.score} />
+                        <span className="text-xs text-muted-foreground">2d ago</span>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
                 {stageLeads.length === 0 && (
-                  <div className="flex items-center justify-center h-24 text-xs text-muted-foreground border-2 border-dashed border-border rounded-lg">
+                  <div className="flex items-center justify-center h-24 text-xs text-muted-foreground border-2 border-dashed border-border rounded-xl">
                     Drop leads here
                   </div>
                 )}

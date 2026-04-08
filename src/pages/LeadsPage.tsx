@@ -72,41 +72,41 @@ export default function LeadsPage() {
   return (
     <DashboardLayout>
       <PageHeader title="Leads" subtitle={`${leadsList.length} total leads in your pipeline`}>
-        <Button variant="outline" size="sm" className="gap-2" onClick={handleExportCSV}><Download className="w-4 h-4" /> Export</Button>
-        <Button variant="outline" size="sm" className="gap-2" onClick={() => setCsvOpen(true)}><Upload className="w-4 h-4" /> Import CSV</Button>
-        <Button size="sm" className="gap-2" onClick={() => setAddOpen(true)}><Plus className="w-4 h-4" /> Add Lead</Button>
+        <Button variant="outline" size="sm" className="gap-2 rounded-xl" onClick={handleExportCSV}><Download className="w-4 h-4" /> Export</Button>
+        <Button variant="outline" size="sm" className="gap-2 rounded-xl" onClick={() => setCsvOpen(true)}><Upload className="w-4 h-4" /> Import CSV</Button>
+        <Button size="sm" className="gap-2 rounded-xl gradient-primary text-white" onClick={() => setAddOpen(true)}><Plus className="w-4 h-4" /> Add Lead</Button>
       </PageHeader>
 
       {selectedIds.size > 0 && (
-        <div className="glass rounded-xl p-3 mb-4 flex items-center gap-3 animate-slide-in">
+        <div className="glass rounded-2xl p-3 mb-4 flex items-center gap-3 animate-slide-in">
           <span className="text-sm font-medium">{selectedIds.size} selected</span>
           <Select onValueChange={v => handleBulkStatusChange(v as LeadStatus)}>
-            <SelectTrigger className="w-[140px] h-8 text-xs"><SelectValue placeholder="Change status" /></SelectTrigger>
+            <SelectTrigger className="w-[140px] h-8 text-xs rounded-xl"><SelectValue placeholder="Change status" /></SelectTrigger>
             <SelectContent>
               {statuses.filter(s => s !== 'all').map(s => (<SelectItem key={s} value={s}>{(s as string).charAt(0).toUpperCase() + (s as string).slice(1)}</SelectItem>))}
             </SelectContent>
           </Select>
-          <Button variant="destructive" size="sm" className="gap-1 h-8 text-xs" onClick={() => setBulkDeleteOpen(true)}><Trash2 className="w-3.5 h-3.5" /> Delete</Button>
+          <Button variant="destructive" size="sm" className="gap-1 h-8 text-xs rounded-xl" onClick={() => setBulkDeleteOpen(true)}><Trash2 className="w-3.5 h-3.5" /> Delete</Button>
           <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={() => setSelectedIds(new Set())}>Clear</Button>
         </div>
       )}
 
-      <div className="glass rounded-xl p-4 mb-6">
+      <div className="glass rounded-2xl p-4 mb-6">
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input placeholder="Search leads..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
+            <Input placeholder="Search leads..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9 rounded-xl" />
           </div>
           <div className="flex items-center gap-2 overflow-x-auto">
             <Filter className="w-4 h-4 text-muted-foreground shrink-0" />
             {statuses.map(s => (
-              <button key={s} onClick={() => { setStatusFilter(s); setPage(1); }} className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors whitespace-nowrap ${statusFilter === s ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}>
+              <button key={s} onClick={() => { setStatusFilter(s); setPage(1); }} className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors whitespace-nowrap ${statusFilter === s ? 'gradient-primary text-white' : 'bg-muted text-muted-foreground hover:bg-surface-mid'}`}>
                 {s === 'all' ? 'All' : s.charAt(0).toUpperCase() + s.slice(1)}
               </button>
             ))}
           </div>
           <Select value={sourceFilter} onValueChange={v => { setSourceFilter(v); setPage(1); }}>
-            <SelectTrigger className="w-[140px] h-9 text-xs"><SelectValue placeholder="Source" /></SelectTrigger>
+            <SelectTrigger className="w-[140px] h-9 text-xs rounded-xl"><SelectValue placeholder="Source" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Sources</SelectItem>
               <SelectItem value="phantombuster">PhantomBuster</SelectItem>
@@ -121,7 +121,7 @@ export default function LeadsPage() {
 
       {loading ? <TableSkeleton rows={8} cols={7} /> : (
         <>
-          <div className="glass rounded-xl overflow-hidden">
+          <div className="glass rounded-2xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
@@ -145,7 +145,7 @@ export default function LeadsPage() {
                       <td className="px-4 py-3 text-sm capitalize text-muted-foreground hidden md:table-cell">{lead.source}</td>
                       <td className="px-4 py-3"><ScoreBadge score={lead.score} /></td>
                       <td className="px-4 py-3"><StatusBadge status={lead.status} /></td>
-                      <td className="px-4 py-3 hidden lg:table-cell"><div className="flex gap-1 flex-wrap">{lead.tags.map(tag => (<span key={tag} className="px-2 py-0.5 rounded-md bg-muted text-muted-foreground text-xs">{tag}</span>))}</div></td>
+                      <td className="px-4 py-3 hidden lg:table-cell"><div className="flex gap-1 flex-wrap">{lead.tags.map(tag => (<span key={tag} className="px-2 py-0.5 rounded-lg bg-muted text-muted-foreground text-xs">{tag}</span>))}</div></td>
                       <td className="px-4 py-3" onClick={e => e.stopPropagation()}><Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setEditLead(lead)}><Pencil className="w-3.5 h-3.5" /></Button></td>
                     </tr>
                   ))}
@@ -159,11 +159,11 @@ export default function LeadsPage() {
             <div className="flex items-center justify-between mt-4">
               <p className="text-xs text-muted-foreground">Showing {(page - 1) * perPage + 1}–{Math.min(page * perPage, filtered.length)} of {filtered.length}</p>
               <div className="flex items-center gap-1">
-                <Button variant="outline" size="icon" className="h-8 w-8" disabled={page === 1} onClick={() => setPage(p => p - 1)}><ChevronLeft className="w-4 h-4" /></Button>
+                <Button variant="outline" size="icon" className="h-8 w-8 rounded-xl" disabled={page === 1} onClick={() => setPage(p => p - 1)}><ChevronLeft className="w-4 h-4" /></Button>
                 {Array.from({ length: totalPages }, (_, i) => i + 1).slice(Math.max(0, page - 3), page + 2).map(p => (
-                  <Button key={p} variant={p === page ? "default" : "outline"} size="icon" className="h-8 w-8 text-xs" onClick={() => setPage(p)}>{p}</Button>
+                  <Button key={p} variant={p === page ? "default" : "outline"} size="icon" className={`h-8 w-8 text-xs rounded-xl ${p === page ? 'gradient-primary text-white' : ''}`} onClick={() => setPage(p)}>{p}</Button>
                 ))}
-                <Button variant="outline" size="icon" className="h-8 w-8" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}><ChevronRight className="w-4 h-4" /></Button>
+                <Button variant="outline" size="icon" className="h-8 w-8 rounded-xl" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}><ChevronRight className="w-4 h-4" /></Button>
               </div>
             </div>
           )}
