@@ -1,156 +1,91 @@
-Here's the upgraded plan. I've kept everything Lovable wrote, corrected what's wrong, and added what's actually missing for a real v1.0:
 
----
 
-# Regent Analytics — Fix + V1.0 Build Plan
+## Plan: Full Visual Redesign to LeadEngine Design System
 
-## Root Cause Fix (Do First)
+### Problem
+1. **Runtime crash**: `src/lib/org.ts` calls `supabase.auth.getUser()` without null-checking `supabase`, causing "Cannot read properties of null (reading 'auth')".
+2. **Visual mismatch**: Current app uses Space Grotesk + dark sidebar theme. The reference design uses Plus Jakarta Sans + Inter, a light slate sidebar, indigo primary (#4648d4), Material Design-inspired surfaces, and a completely different layout language.
 
-**Problem 1 — Deno files in wrong directory** Delete `src/supabase/` entirely. Edge functions belong at `supabase/functions/` at project root. Lovable can't deploy these anyway — flag them as "deploy manually via Supabase CLI" and leave stubs.
+### Design System Extraction from Reference
 
-**Problem 2 — IntegrationsPage crashes without Supabase** `IntegrationsPage.tsx` calls `loadConfig()`, `pbFetchAgents()`, and `supabase.from()` on mount with no null safety. Fix: wrap all Supabase calls in try/catch with graceful fallback to defaults, and add a `VITE_SUPABASE_URL` existence check before initializing the client.
+The uploaded HTML contains 9 distinct page designs. Core design tokens:
 
-**Problem 3 — Missing from Lovable's diagnosis**
+- **Fonts**: Plus Jakarta Sans (headlines, 600-800 weight), Inter (body/labels, 300-600)
+- **Primary**: `#4648d4` (indigo), container `#6063ee`
+- **Tertiary**: `#9e00b5` (purple), used for accents/CTAs
+- **Surfaces**: `#f7f9fb` (background), `#ffffff` (cards), `#f2f4f6` (container-low), `#eceef0` (container), `#e6e8ea` (container-high)
+- **Text**: `#191c1e` (on-surface), `#464554` (on-surface-variant), `#767586` (outline)
+- **Signature gradient**: `linear-gradient(135deg, #4648d4 0%, #6063ee 100%)`
+- **Border radius**: Cards use `rounded-2xl` / `rounded-3xl`, buttons `rounded-xl`, pills `rounded-full`
+- **Sidebar**: Light bg (slate-50), active item has `border-r-2 border-indigo-600 bg-white` styling
+- **Top bar**: `bg-white/80 backdrop-blur-xl`, search in rounded-full input
+- **Cards**: White bg, `border border-outline-variant/5`, `shadow-sm`, large padding (p-6/p-8)
+- **Active nav**: Filled icon, indigo text, right border accent, white/light bg
 
-- `src/lib/supabase.ts` will throw if env vars are missing at import time. Add a guard: if vars are undefined, export a null client and show a banner rather than crash.
-- `src/lib/integrations.ts` — `pbFetchAgents()` calls PhantomBuster directly from the browser. This will hit CORS in production. Either proxy through an Edge Function or use a Supabase RPC wrapper.
-- All pages still import from `@/data/mockData` — Leads, Dashboard, Campaigns, Messages pages are entirely mock. The plan only mentions IntegrationsPage. Every page needs Supabase wiring.
+### Pages from Reference (mapped to existing routes)
 
----
+| Reference Page | Route | Key Layout Features |
+|---|---|---|
+| Login | `/login` | Split layout: left abstract mesh gradient panel, right form panel |
+| Dashboard | `/` | Quick actions, 5 stat cards (2xl rounded), performance chart, funnel, campaign bars, activity feed, AI insights bento |
+| Pipeline | `/pipeline` | Kanban columns with drag cards, deal values, time indicators |
+| AI Insights | (new or sub-page) | Hero banner with gradient, NL query bar, insight cards with border-l-4 accents |
+| Analytics | `/analytics` | Revenue/conversion/response tiles, SVG charts, channel distribution, date range picker |
+| Messages | `/messages` | 3-column: conversation list, chat window, lead detail sidebar |
+| Lead Profile | `/leads/:id` or drawer | Profile header with avatar, client details card, tasks, documents grid, activity timeline |
+| Campaigns | `/campaigns` | Campaign list rows with stats, create campaign dialog with template preview |
+| Integrations | `/integrations` | Hero section, filter pills, bento grid marketplace cards |
 
-## Files to Create
+### Implementation Plan
 
-```
-src/pages/LoginPage.tsx              — auth UI
-src/pages/OnboardingPage.tsx         — first-run wizard
-src/contexts/AuthContext.tsx         — Supabase auth session + user state
-src/contexts/WorkspaceContext.tsx    — active workspace/org state
-src/components/NotificationCenter.tsx
-src/components/CommandPalette.tsx
-src/components/SkeletonLoaders.tsx   — reusable skeletons for every page
-src/components/ErrorBoundary.tsx
-src/components/EmptyState.tsx        — reusable empty state with icon + CTA
-src/hooks/useLeads.ts                — Supabase data hook
-src/hooks/useCampaigns.ts
-src/hooks/useIntegrationConfig.ts
-src/hooks/useNotifications.ts
-src/hooks/useWorkspace.ts
-supabase/functions/send-whatsapp/index.ts   (stub — deploy via CLI)
-supabase/functions/send-email/index.ts      (stub — deploy via CLI)
-```
+**Phase 1: Fix crash + Update design tokens**
+- Fix `src/lib/org.ts` to null-check supabase
+- Rewrite `src/index.css` with new color variables matching the reference palette
+- Update `tailwind.config.ts` with new font families, colors, border radius
+- Add Plus Jakarta Sans font import
 
-## Files to Modify
+**Phase 2: Core layout components**
+- Rewrite `AppSidebar.tsx`: Light bg (slate-50), indigo active state with right-border accent, Material Symbols-style lucide icons, "LeadEngine" branding, bottom section with Settings/Profile/Switch Agency, "Convert Lead" CTA button
+- Rewrite `DashboardLayout.tsx`: White/80 backdrop-blur header, rounded-full search input, "New Campaign" + "Add Lead" buttons in header, notification bell with dot, user avatar
+- Update `CommandPalette.tsx` to match the NL query bar style
 
-```
-src/App.tsx                          — auth routes, protected route wrapper, onboarding redirect
-src/components/DashboardLayout.tsx   — notification bell, mobile menu, workspace switcher, logo
-src/pages/IntegrationsPage.tsx       — full Supabase wiring (already scoped)
-src/pages/LeadsPage.tsx              — replace mockData with useLeads hook
-src/pages/DashboardPage.tsx          — replace mockData with real Supabase aggregates
-src/pages/CampaignsPage.tsx          — replace mockData with useCampaigns hook
-src/pages/MessagesPage.tsx           — wire to whatsapp_logs + email_logs tables
-src/pages/SettingsPage.tsx           — add theme selector, logo upload, white-label toggle, scheduled reports toggle
-src/data/mockData.ts                 — add notification mock data, keep as fallback only
-src/lib/supabase.ts                  — null-safe client init with env check
-src/lib/integrations.ts              — CORS fix on pbFetchAgents
-```
+**Phase 3: Rewrite all pages**
+- `LoginPage.tsx`: Split layout with abstract mesh gradient left panel (stats overlay), form right panel with rounded-xl inputs, signature-gradient submit button, social login buttons
+- `DashboardPage.tsx`: 5 stat cards in new card style (icon in colored bg, change badge), performance trend chart area, funnel overview with progress bars + insight callout, campaign performance bars, recent activity with colored icon circles, AI insights bento section
+- `PipelinePage.tsx`: Kanban columns with colored dot headers, cards with source badges (INBOUND/PRIORITY), deal values, drag indicators
+- `LeadsPage.tsx`: Table with new surface styling, lead profile drawer matching reference (avatar, details card, tasks, documents, activity timeline)
+- `CampaignsPage.tsx`: Campaign list rows with icon + stats (Sent/Opened/Replied/Conversion), status badges, create campaign dialog matching reference
+- `MessagesPage.tsx`: 3-column layout (conversation list with avatars + channel icons, active chat window with message bubbles, lead detail sidebar)
+- `AnalyticsPage.tsx`: Performance tiles with sparklines, date range picker, channel distribution chart, conversion funnel
+- `IntegrationsPage.tsx`: Hero section with gradient image, filter pill row, bento grid marketplace cards with icons and status badges, bottom banner
+- `SettingsPage.tsx`: Clean card-based settings matching surface styling
 
----
+**Phase 4: Component updates**
+- `StatCard` in `DashboardWidgets.tsx`: New layout with icon in colored bg square, change badge pill
+- `StatusBadge.tsx`: Use new color tokens
+- All dialogs/drawers: Use rounded-2xl/3xl, signature-gradient primary buttons
 
-## Supabase Schema (Add to SQL — Lovable's plan has none of this)
+### Files to Modify
+- `src/lib/org.ts` — null-check fix
+- `src/index.css` — complete rewrite of CSS variables
+- `tailwind.config.ts` — new fonts, colors, radius
+- `src/components/AppSidebar.tsx` — light sidebar redesign
+- `src/components/DashboardLayout.tsx` — new header layout
+- `src/components/DashboardWidgets.tsx` — new stat card design
+- `src/pages/LoginPage.tsx` — split layout redesign
+- `src/pages/DashboardPage.tsx` — full redesign
+- `src/pages/PipelinePage.tsx` — kanban redesign
+- `src/pages/LeadsPage.tsx` — table + profile redesign
+- `src/pages/CampaignsPage.tsx` — list + dialog redesign
+- `src/pages/MessagesPage.tsx` — 3-column chat redesign
+- `src/pages/AnalyticsPage.tsx` — tiles + charts redesign
+- `src/pages/IntegrationsPage.tsx` — marketplace redesign
+- `src/pages/SettingsPage.tsx` — clean card layout
+- `src/components/StatusBadge.tsx` — new badge colors
 
-sql
+### Technical Notes
+- Replace Google Fonts import: swap Space Grotesk for Plus Jakarta Sans, keep Inter
+- All mock data and hooks remain unchanged — only the visual layer changes
+- Material Symbols from reference will be replaced with equivalent Lucide React icons (already installed)
+- The signature-gradient class will be added as a Tailwind utility
 
-```sql
--- Workspaces (multi-tenancy foundation)
-create table workspaces (
-  id uuid primary key default gen_random_uuid(),
-  name text not null,
-  slug text unique not null,
-  logo_url text,
-  primary_color text default '#6366f1',
-  powered_by_visible boolean default true,
-  created_at timestamptz default now()
-);
-
--- Workspace members
-create table workspace_members (
-  id uuid primary key default gen_random_uuid(),
-  workspace_id uuid references workspaces(id) on delete cascade,
-  user_id uuid references auth.users(id) on delete cascade,
-  role text default 'viewer' check (role in ('admin', 'manager', 'viewer')),
-  created_at timestamptz default now(),
-  unique(workspace_id, user_id)
-);
-
--- Notifications
-create table notifications (
-  id uuid primary key default gen_random_uuid(),
-  workspace_id uuid references workspaces(id) on delete cascade,
-  user_id uuid references auth.users(id) on delete cascade,
-  type text not null, -- new_lead | message_reply | sync_complete | campaign_milestone
-  title text not null,
-  body text,
-  read boolean default false,
-  meta jsonb default '{}',
-  created_at timestamptz default now()
-);
-
--- Add workspace_id to all existing tables
-alter table leads add column workspace_id uuid references workspaces(id);
-alter table integration_configs add column workspace_id uuid references workspaces(id);
-alter table integration_sync_logs add column workspace_id uuid references workspaces(id);
-alter table whatsapp_logs add column workspace_id uuid references workspaces(id);
-alter table email_logs add column workspace_id uuid references workspaces(id);
-
--- RLS (enable after multi-tenancy works)
-alter table workspaces enable row level security;
-alter table workspace_members enable row level security;
-alter table notifications enable row level security;
-alter table leads enable row level security;
-
--- Policies
-create policy "Members see their workspace leads"
-  on leads for all using (
-    workspace_id in (
-      select workspace_id from workspace_members where user_id = auth.uid()
-    )
-  );
-
-create policy "Members see their notifications"
-  on notifications for all using (user_id = auth.uid());
-```
-
----
-
-## Priority Order (Corrected)
-
-Lovable's order is wrong — auth must gate everything else or you're building on sand.
-
-**Phase 1 — Foundation (nothing works without these)**
-
-1. `src/lib/supabase.ts` null-safe init
-2. `AuthContext.tsx` — Supabase `onAuthStateChange`, session, user, loading state
-3. `LoginPage.tsx` — sign in + sign up + magic link tabs, real Supabase auth calls
-4. `App.tsx` — protected route wrapper, redirect unauthenticated users to `/login`
-5. `WorkspaceContext.tsx` — load workspace on auth, store active workspace_id globally
-
-**Phase 2 — Data Layer (replace all mockData)** 6. `useLeads.ts`, `useCampaigns.ts`, `useIntegrationConfig.ts` hooks 7. Wire `LeadsPage`, `DashboardPage`, `CampaignsPage`, `MessagesPage` to real hooks 8. `IntegrationsPage` full Supabase wiring (already scoped in Lovable's plan)
-
-**Phase 3 — UX Infrastructure** 9. `SkeletonLoaders.tsx` — skeletons for every page section 10. `ErrorBoundary.tsx` + `EmptyState.tsx` 11. `NotificationCenter.tsx` — bell icon, dropdown, real-time via Supabase `subscribe()` 12. `CommandPalette.tsx` — Cmd+K, search leads + campaigns + navigate
-
-**Phase 4 — Mobile + Polish** 13. Mobile sidebar (hamburger, slide-in drawer) 14. Responsive table layouts on Leads + Campaigns 15. Touch-friendly pipeline cards on pipeline/kanban view
-
-**Phase 5 — Onboarding + Branding** 16. `OnboardingPage.tsx` — wizard: workspace name → logo → connect first integration → done 17. `SettingsPage` additions: theme color picker, logo upload (Supabase Storage), white-label toggle, scheduled reports
-
----
-
-## What Lovable's Plan Gets Wrong
-
-- **No mention of wiring Leads/Dashboard/Campaigns** — only IntegrationsPage. Three-quarters of the app is still mock data after their plan executes.
-- **No Supabase schema** — they list files to create but no SQL, so there's nothing to connect to.
-- **No RLS** — multi-tenancy without row-level security means every user sees every workspace's data.
-- **No real-time** — notifications via polling is bad UX. Supabase has `channel().on('postgres_changes')` — use it for notifications and sync logs.
-- **CORS issue on PhantomBuster** — calling their API directly from the browser will fail in production. Needs the Edge Function proxy.
-- **Onboarding redirect logic missing** — new users who skip onboarding should still land somewhere sane. App.tsx needs to check `workspace_members` count after auth and redirect accordingly.
-- **No Supabase Storage config** — logo upload is listed but Storage bucket setup isn't mentioned anywhere.
