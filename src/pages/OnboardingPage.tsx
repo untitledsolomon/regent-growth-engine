@@ -6,6 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { Building2, Palette, Plug, ArrowRight, Check } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/lib/supabase';
 
 const steps = [
   { icon: Building2, title: 'Your Workspace', desc: 'Set up your company details' },
@@ -17,10 +19,37 @@ export default function OnboardingPage() {
   const navigate = useNavigate();
   const { workspace, setWorkspace, setIsOnboarded } = useWorkspace();
   const [step, setStep] = useState(0);
-  const [companyName, setCompanyName] = useState(workspace.name);
+  const [companyName, setCompanyName] = useState("");
   const [color, setColor] = useState(workspace.primary_color);
+  const { user } = useAuth();
 
-  const handleFinish = () => {
+  const handleFinish = async () => {
+    if (!supabase || !user) return;
+
+    const baseSlug = companyName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    const slug = `${baseSlug}-${crypto.randomUUID().slice(0, 8)}`; // always unique
+    const orgId = crypto.randomUUID();
+
+    const { error: orgError } = await supabase
+      .from('organisations')
+      .insert({ id: orgId, name: companyName, slug });
+
+    if (orgError) {
+      toast.error('Failed to create organisation');
+      console.error(orgError);
+      return;
+    }
+
+    const { error: memberError } = await supabase
+      .from('org_members')
+      .insert({ user_id: user.id, org_id: orgId, role: 'owner' });
+
+    if (memberError) {
+      toast.error('Failed to link user to organisation');
+      console.error(memberError);
+      return;
+    }
+
     setWorkspace({ ...workspace, name: companyName, primary_color: color });
     setIsOnboarded(true);
     toast.success('Welcome to Regent! Your workspace is ready.');
@@ -112,7 +141,7 @@ export default function OnboardingPage() {
               </div>
               <div className="flex gap-2">
                 <Button variant="outline" className="flex-1" onClick={() => setStep(1)}>Back</Button>
-                <Button className="flex-1 gap-2" onClick={handleFinish}>
+                <Button className="flex-1 gap-2" onClick={handleFinish} disabled={!companyName.trim()}>
                   <Check className="w-4 h-4" /> Finish Setup
                 </Button>
               </div>

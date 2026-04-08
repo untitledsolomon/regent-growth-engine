@@ -73,6 +73,7 @@ export function CreateCampaignDialog({ open, onOpenChange, onAdd }: CreateCampai
     const campaignLeads = matchingLeads.map((lead) => ({
       campaign_id: campaignId,
       lead_id: lead.id,
+      org_id: orgId,
     }));
 
     const {error: linkError} = await supabase

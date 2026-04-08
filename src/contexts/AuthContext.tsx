@@ -67,8 +67,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(demoUser);
       return { error: null };
     }
-    const { error } = await supabase.auth.signUp({ email, password });
-    return { error: error as Error | null };
+
+    const { data, error } = await supabase.auth.signUp({ email, password });
+    if (error) return { error: error as Error };
+
+    // Store user id temporarily so onboarding can use it
+    // Org creation happens in onboarding when we have the company name
+    return { error: null };
   };
 
   const signInWithMagicLink = async (email: string) => {
