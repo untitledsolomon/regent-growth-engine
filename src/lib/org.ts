@@ -1,8 +1,8 @@
 import { supabase } from "./supabase";
 
 export async function getUserOrg() {
+  if (!supabase) return null;
   const { data: { user } } = await supabase.auth.getUser();
-  console.log('current auth user:', user?.id); // ← add this
   if (!user) return null;
 
   const { data } = await supabase
@@ -11,6 +11,5 @@ export async function getUserOrg() {
     .eq('user_id', user.id)
     .maybeSingle();
 
-  console.log('org_members query result:', data); // ← add this
   return data;
 }
