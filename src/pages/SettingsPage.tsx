@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { PageHeader } from "@/components/DashboardWidgets";
@@ -8,10 +8,20 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { User, Bell, Plug, ArrowRight, Palette, Upload, Shield } from "lucide-react";
+import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/contexts/AuthContext";
+import { useOrg } from "@/contexts/orgContext";
 
 export default function SettingsPage() {
   const navigate = useNavigate();
-  const [profile, setProfile] = useState({ name: 'Regent Admin', email: 'admin@regent.io', company: 'Regent Agency' });
+  const { user } = useAuth();
+  const { orgId } = useOrg();
+
+  const [profile, setProfile] = useState({
+    name: user?.user_metadata?.full_name ?? 'Regent Admin',
+    email: user?.email ?? 'admin@regent.io',
+    company: 'Regent Agency',
+  });
   const [notifications, setNotifications] = useState({
     newLead: true,
     messageReply: true,
@@ -19,9 +29,75 @@ export default function SettingsPage() {
     weeklyReport: false,
   });
   const [branding, setBranding] = useState({ primaryColor: '#4648d4', poweredBy: true });
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [savingBranding, setSavingBranding] = useState(false);
 
-  const handleSaveProfile = () => toast.success('Profile saved');
-  const handleSaveBranding = () => toast.success('Branding updated');
+  // Load org branding from Supabase when orgId is available
+  useEffect(() => {
+    if (!supabase || !orgId) return;
+    supabase
+      .from('organisations')
+      .select('name, primary_color, powered_by_visible')
+      .eq('id', orgId)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data) {
+          setProfile(p => ({ ...p, company: data.name }));
+          setBranding({
+            primaryColor: data.primary_color ?? '#4648d4',
+            poweredBy: data.powered_by_visible ?? true,
+          });
+        }
+      });
+  }, [orgId]);
+
+  const handleSaveProfile = async () => {
+    setSavingProfile(true);
+    try {
+      if (supabase && user) {
+        // Update display name in auth metadata
+        const { error: authError } = await supabase.auth.updateUser({
+          data: { full_name: profile.name },
+        });
+        if (authError) throw authError;
+
+        // Update org name if we own an org
+        if (orgId) {
+          const { error: orgError } = await supabase
+            .from('organisations')
+            .update({ name: profile.company })
+            .eq('id', orgId);
+          if (orgError) throw orgError;
+        }
+      }
+      toast.success('Profile saved');
+    } catch (e: any) {
+      toast.error(e.message ?? 'Failed to save profile');
+    } finally {
+      setSavingProfile(false);
+    }
+  };
+
+  const handleSaveBranding = async () => {
+    setSavingBranding(true);
+    try {
+      if (supabase && orgId) {
+        const { error } = await supabase
+          .from('organisations')
+          .update({
+            primary_color: branding.primaryColor,
+            powered_by_visible: branding.poweredBy,
+          })
+          .eq('id', orgId);
+        if (error) throw error;
+      }
+      toast.success('Branding updated');
+    } catch (e: any) {
+      toast.error(e.message ?? 'Failed to update branding');
+    } finally {
+      setSavingBranding(false);
+    }
+  };
 
   return (
     <DashboardLayout>
@@ -33,9 +109,11 @@ export default function SettingsPage() {
           <h3 className="font-display font-semibold text-base mb-4 flex items-center gap-2"><User className="w-4 h-4 text-primary" /> Profile</h3>
           <div className="space-y-3">
             <div><Label className="text-xs">Full Name</Label><Input value={profile.name} onChange={e => setProfile(p => ({ ...p, name: e.target.value }))} className="mt-1 rounded-xl" /></div>
-            <div><Label className="text-xs">Email</Label><Input value={profile.email} onChange={e => setProfile(p => ({ ...p, email: e.target.value }))} className="mt-1 rounded-xl" /></div>
+            <div><Label className="text-xs">Email</Label><Input value={profile.email} readOnly className="mt-1 rounded-xl opacity-60 cursor-not-allowed" /></div>
             <div><Label className="text-xs">Company</Label><Input value={profile.company} onChange={e => setProfile(p => ({ ...p, company: e.target.value }))} className="mt-1 rounded-xl" /></div>
-            <Button size="sm" onClick={handleSaveProfile} className="mt-2 rounded-xl gradient-primary text-white">Save Profile</Button>
+            <Button size="sm" onClick={handleSaveProfile} disabled={savingProfile} className="mt-2 rounded-xl gradient-primary text-white">
+              {savingProfile ? 'Saving…' : 'Save Profile'}
+            </Button>
           </div>
         </div>
 
@@ -80,7 +158,9 @@ export default function SettingsPage() {
               <div><p className="text-sm font-medium">Show "Powered by Regent"</p><p className="text-xs text-muted-foreground">Display attribution in client portal</p></div>
               <Switch checked={branding.poweredBy} onCheckedChange={v => setBranding(b => ({ ...b, poweredBy: v }))} />
             </div>
-            <Button size="sm" onClick={handleSaveBranding} className="rounded-xl gradient-primary text-white">Save Branding</Button>
+            <Button size="sm" onClick={handleSaveBranding} disabled={savingBranding} className="rounded-xl gradient-primary text-white">
+              {savingBranding ? 'Saving…' : 'Save Branding'}
+            </Button>
           </div>
         </div>
 

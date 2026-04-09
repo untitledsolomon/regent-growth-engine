@@ -1,13 +1,14 @@
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { PageHeader } from "@/components/DashboardWidgets";
-import { dailyMetrics, sourceBreakdown, funnelData, campaigns } from "@/data/mockData";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from "recharts";
 import { Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 const COLORS = ['hsl(239, 64%, 55%)', 'hsl(205, 85%, 55%)', 'hsl(152, 60%, 42%)', 'hsl(38, 92%, 50%)', 'hsl(280, 100%, 36%)'];
 
 export default function AnalyticsPage() {
+  const { dailyMetrics, sourceBreakdown, funnelData, campaigns } = useAnalytics();
   const totalSent = campaigns.reduce((a, c) => a + c.sent, 0);
   const totalReplied = campaigns.reduce((a, c) => a + c.replied, 0);
   const totalConv = campaigns.reduce((a, c) => a + c.conversions, 0);
