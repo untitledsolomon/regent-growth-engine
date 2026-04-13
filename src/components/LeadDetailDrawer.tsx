@@ -41,6 +41,29 @@ export function LeadDetailDrawer({ lead, open, onOpenChange, onStatusChange, onD
         </SheetHeader>
 
         <div className="mt-6 space-y-6">
+          {/* Metadata / Attribution Info */}
+          {lead.metadata && Object.keys(lead.metadata).length > 0 && (
+            <div className="p-4 rounded-xl bg-primary/5 border border-primary/10">
+              <p className="text-xs font-semibold text-primary uppercase tracking-wider mb-2">Content Attribution</p>
+              <div className="space-y-1.5">
+                {lead.metadata.postId && (
+                  <div className="flex justify-between text-xs">
+                    <span className="text-muted-foreground">Post ID:</span>
+                    <span className="font-mono font-medium">{lead.metadata.postId}</span>
+                  </div>
+                )}
+                {lead.metadata.url && (
+                  <div className="flex flex-col gap-0.5 text-xs">
+                    <span className="text-muted-foreground">Captured on:</span>
+                    <a href={lead.metadata.url} target="_blank" rel="noreferrer" className="text-primary hover:underline truncate">
+                      {lead.metadata.url}
+                    </a>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Contact Info */}
           <div className="space-y-3">
             <div className="flex items-center gap-3 text-sm">

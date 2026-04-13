@@ -19,7 +19,7 @@
  */
 
 import { corsHeaders } from '../_shared/cors.ts';
-import { getClient, json, err } from '../_shared/supabase.ts';
+import { getClient, adminClient, getScopedAuth, json, err } from '../_shared/supabase.ts';
 
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
@@ -30,20 +30,28 @@ Deno.serve(async (req: Request) => {
     return addCors(err('Method not allowed', 405));
   }
 
-  const supabase = getClient(req);
+  const scopedAuth = await getScopedAuth(req);
+  const supabase = scopedAuth ? adminClient() : getClient(req);
 
   try {
+    if (scopedAuth && !scopedAuth.scopes.includes('analytics:read')) {
+      return addCors(err('Insufficient scopes', 403));
+    }
+
+    // If using scoped auth, we must filter queries by org_id
+    const filterByOrg = (query: any) => scopedAuth ? query.eq('org_id', scopedAuth.org_id) : query;
+
     // Run queries in parallel
     const [leadsRes, campaignsRes, recentRes] = await Promise.all([
-      supabase.from('leads').select('status, source'),
-      supabase
+      filterByOrg(supabase.from('leads').select('status, source')),
+      filterByOrg(supabase
         .from('campaigns')
-        .select('status, sent, delivered, replied, conversions'),
-      supabase
+        .select('status, sent, delivered, replied, conversions')),
+      filterByOrg(supabase
         .from('leads')
         .select('id, name, business, status, source, created_at')
         .order('created_at', { ascending: false })
-        .limit(5),
+        .limit(5)),
     ]);
 
     if (leadsRes.error) return addCors(err(leadsRes.error.message, 500));
@@ -61,11 +69,18 @@ Deno.serve(async (req: Request) => {
       closed: 0,
     };
     const sourceCounts: Record<string, number> = {};
+    const contentAttribution: Record<string, number> = {};
 
     for (const lead of leads) {
       if (lead.status in statusCounts) statusCounts[lead.status]++;
       if (lead.source) {
         sourceCounts[lead.source] = (sourceCounts[lead.source] ?? 0) + 1;
+      }
+
+      // Attribution logic
+      const postId = (lead as any).metadata?.postId;
+      if (postId) {
+        contentAttribution[postId] = (contentAttribution[postId] ?? 0) + 1;
       }
     }
 
@@ -107,6 +122,7 @@ Deno.serve(async (req: Request) => {
         conversion_rate: conversionRate,
         reply_rate: replyRate,
         leads_by_source: sourceCounts,
+        content_attribution: contentAttribution,
         recent_leads: recentRes.data ?? [],
       }),
     );

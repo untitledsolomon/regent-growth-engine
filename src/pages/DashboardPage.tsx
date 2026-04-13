@@ -2,6 +2,7 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { PageHeader, StatCard } from "@/components/DashboardWidgets";
 import { useLeads } from "@/hooks/useLeads";
 import { useCampaigns } from "@/hooks/useCampaigns";
+import { useAnalytics } from "@/hooks/useAnalytics";
 import { dailyMetrics, aiInsights, funnelData, recentActivities } from "@/data/mockData";
 import { Users, Send, MessageSquare, Trophy, TrendingUp, Lightbulb, AlertTriangle, Zap, Activity, UserPlus, MailCheck, Megaphone, Upload, ToggleRight, Plus, FileUp, PenSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -21,7 +22,8 @@ export default function DashboardPage() {
   const navigate = useNavigate();
   const { leads, loading: leadsLoading } = useLeads();
   const { campaigns, loading: campaignsLoading } = useCampaigns();
-  const loading = leadsLoading || campaignsLoading;
+  const { data: analytics, loading: analyticsLoading } = useAnalytics();
+  const loading = leadsLoading || campaignsLoading || analyticsLoading;
 
   const totalLeads = leads.length;
   const contacted = leads.filter(l => l.status !== 'new').length;
@@ -137,6 +139,26 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {analytics?.content_attribution && Object.keys(analytics.content_attribution).length > 0 && (
+        <div className="glass rounded-2xl p-6 mb-8">
+          <h3 className="font-display font-semibold text-lg mb-4 flex items-center gap-2">
+            <Trophy className="w-5 h-5 text-primary" /> Content → Lead Attribution
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {Object.entries(analytics.content_attribution).map(([postId, count]: [string, any]) => (
+              <div key={postId} className="p-4 rounded-xl bg-muted/30 border border-border">
+                <p className="text-xs text-muted-foreground mb-1 uppercase tracking-tighter font-bold">Post ID</p>
+                <p className="font-mono text-sm font-semibold truncate">{postId}</p>
+                <div className="mt-2 flex items-center justify-between">
+                  <span className="text-2xl font-bold">{count}</span>
+                  <span className="text-xs text-muted-foreground">Leads</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="glass rounded-2xl p-6">
         <h3 className="font-display font-semibold text-lg mb-4 flex items-center gap-2">
