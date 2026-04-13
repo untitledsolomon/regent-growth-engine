@@ -1,8 +1,14 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
+import { dailyMetrics, sourceBreakdown, funnelData, campaigns } from '@/data/mockData';
 
 export function useAnalytics() {
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<any>({
+    dailyMetrics,
+    sourceBreakdown,
+    funnelData,
+    campaigns
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -26,5 +32,9 @@ export function useAnalytics() {
     fetchAnalytics();
   }, []);
 
-  return { data, loading, error };
+  return {
+    ...data,
+    loading,
+    error
+  };
 }
