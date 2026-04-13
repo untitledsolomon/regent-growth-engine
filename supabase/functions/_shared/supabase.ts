@@ -6,6 +6,14 @@ const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const AGENT_API_KEY = Deno.env.get('AGENT_API_KEY') ?? '';
 
 /**
+ * Scoped credentials returned by API key verification
+ */
+export interface ScopedAuth {
+  org_id: string;
+  scopes: string[];
+}
+
+/**
  * Returns an admin Supabase client (bypasses RLS) when the request carries a
  * valid agent API key or the Supabase service-role key.  Otherwise returns a
  * user-scoped client that respects RLS.
@@ -18,15 +26,35 @@ export function getClient(req: Request): SupabaseClient {
   const isAgentKey = AGENT_API_KEY.length > 0 && agentKey === AGENT_API_KEY;
 
   if (isServiceRole || isAgentKey) {
-    return createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
-      auth: { persistSession: false },
-    });
+    return adminClient();
   }
 
   return createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     global: { headers: { Authorization: authHeader } },
     auth: { persistSession: false },
   });
+}
+
+/**
+ * Verifies a scoped API key and returns its org_id and scopes.
+ * Use this for public-facing integration points (like lead capture).
+ */
+export async function getScopedAuth(req: Request): Promise<ScopedAuth | null> {
+  const apiKey = req.headers.get('x-api-key');
+  if (!apiKey) return null;
+
+  const supabase = adminClient();
+  const { data, error } = await supabase.rpc('verify_api_key', { p_key: apiKey });
+
+  if (error || !data || data.length === 0) {
+    console.error('API key verification failed:', error);
+    return null;
+  }
+
+  return {
+    org_id: data[0].org_id,
+    scopes: data[0].scopes,
+  };
 }
 
 export function adminClient(): SupabaseClient {

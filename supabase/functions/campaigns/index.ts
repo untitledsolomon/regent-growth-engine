@@ -20,54 +20,15 @@
 
 import { corsHeaders } from '../_shared/cors.ts';
 import { getClient, adminClient, json, err } from '../_shared/supabase.ts';
+import { dispatchMessage } from '../_shared/integrations/mod.ts';
 
-const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
-const RESEND_BATCH_SIZE = 10; // Resend batch send limit
+const BATCH_SIZE = 10;
 
 /** Replace {{name}} and {{business}} placeholders in a template string. */
 function renderTemplate(template: string, lead: { name?: string; business?: string }): string {
   return template
     .replace(/\{\{name\}\}/g, lead.name ?? 'there')
     .replace(/\{\{business\}\}/g, lead.business ?? 'your business');
-}
-
-/** Send one email via Resend. Returns true on success. */
-async function sendEmail(opts: {
-  to: string;
-  fromName: string;
-  fromEmail: string;
-  subject: string;
-  html: string;
-  text?: string;
-}): Promise<boolean> {
-  if (!RESEND_API_KEY) {
-    console.warn('RESEND_API_KEY not set — email delivery skipped');
-    return false;
-  }
-
-  const body: Record<string, unknown> = {
-    from: `${opts.fromName} <${opts.fromEmail}>`,
-    to: [opts.to],
-    subject: opts.subject,
-    html: opts.html,
-  };
-  if (opts.text) body.text = opts.text;
-
-  const res = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${RESEND_API_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
-  });
-
-  if (!res.ok) {
-    const errData = await res.json().catch(() => ({}));
-    console.error('Resend send error:', res.status, errData);
-    return false;
-  }
-  return true;
 }
 
 Deno.serve(async (req: Request) => {
@@ -124,63 +85,52 @@ Deno.serve(async (req: Request) => {
       const sendEmails = channel === 'email' || channel === 'both';
 
       const fromName = campaign.from_name || 'Regent';
-      const fromEmail = campaign.from_email || 'updates@regent.systems';
       const subject = campaign.subject || campaign.name;
       const htmlTemplate = campaign.message_html || `<p>Hi {{name}},</p><p>${campaign.name}</p>`;
-      const textTemplate = campaign.message_text;
+      const textTemplate = campaign.message_text || campaign.name;
 
       let sentCount = 0;
       const sentIds: string[] = [];
       const failedIds: string[] = [];
 
-      if (sendEmails && RESEND_API_KEY) {
-        // Process in batches to respect Resend rate limits
-        for (let i = 0; i < pending.length; i += RESEND_BATCH_SIZE) {
-          const batch = pending.slice(i, i + RESEND_BATCH_SIZE);
-          await Promise.all(
-            batch.map(async (row) => {
-              const lead = Array.isArray(row.leads) ? row.leads[0] : row.leads;
-              if (!lead?.email) {
-                failedIds.push(row.id);
-                return;
-              }
-              const success = await sendEmail({
-                to: lead.email,
-                fromName,
-                fromEmail,
-                subject: renderTemplate(subject, lead),
-                html: renderTemplate(htmlTemplate, lead),
-                text: textTemplate ? renderTemplate(textTemplate, lead) : undefined,
-              });
-              if (success) {
-                sentIds.push(row.id);
-                sentCount++;
-              } else {
-                failedIds.push(row.id);
-              }
-            }),
-          );
-        }
+      // Process in batches
+      for (let i = 0; i < pending.length; i += BATCH_SIZE) {
+        const batch = pending.slice(i, i + BATCH_SIZE);
+        await Promise.all(
+          batch.map(async (row) => {
+            const lead = Array.isArray(row.leads) ? row.leads[0] : row.leads;
+            if (!lead) {
+              failedIds.push(row.id);
+              return;
+            }
 
-        // Mark sent rows
-        if (sentIds.length > 0) {
-          await admin
-            .from('campaign_leads')
-            .update({ status: 'sent' })
-            .in('id', sentIds);
-        }
-      } else {
-        // No email delivery configured (WhatsApp-only or missing Resend key) — mark all as sent for tracking
-        sentCount = leadsCount;
+            const results = await dispatchMessage(channel as any, {
+              to_phone: lead.phone,
+              to_email: lead.email,
+              from_name: fromName,
+              subject: renderTemplate(subject, lead),
+              body_html: renderTemplate(htmlTemplate, lead),
+              body_text: renderTemplate(textTemplate, lead),
+            });
+
+            const success = results.whatsapp_success || results.email_success;
+
+            if (success) {
+              sentIds.push(row.id);
+              sentCount++;
+            } else {
+              failedIds.push(row.id);
+            }
+          }),
+        );
+      }
+
+      // Mark sent rows
+      if (sentIds.length > 0) {
         await admin
           .from('campaign_leads')
           .update({ status: 'sent' })
-          .eq('campaign_id', campaignId)
-          .eq('status', 'pending');
-
-        if (!RESEND_API_KEY && sendEmails) {
-          console.warn('RESEND_API_KEY not configured — marked leads as sent without actual delivery');
-        }
+          .in('id', sentIds);
       }
 
       // Update campaign sent count
