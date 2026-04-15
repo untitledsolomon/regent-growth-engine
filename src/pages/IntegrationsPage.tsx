@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { PageHeader } from "@/components/DashboardWidgets";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,8 @@ import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
+import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   Globe, MessageSquare, Mail, CheckCircle, XCircle, RefreshCw,
   Activity, Zap, Clock, ArrowUpRight, Send, Eye, Reply,
@@ -29,9 +31,11 @@ const allIntegrations = [
 ];
 
 export default function IntegrationsPage() {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("marketplace");
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [orgId, setOrgId] = useState<string | null>(null);
 
   // PhantomBuster state
   const [pbKey, setPbKey] = useState("");
@@ -56,12 +60,70 @@ export default function IntegrationsPage() {
   const [zohoPassword, setZohoPassword] = useState("");
   const [zohoMetrics] = useState({ sentToday: 89, bounceRate: 1.2, openRate: 42.7, totalSent: 3150 });
 
+  useEffect(() => {
+    async function fetchIntegrationSettings() {
+      if (!supabase || !user) return;
+      const { data: orgMember } = await supabase.from('org_members').select('org_id').eq('user_id', user.id).single();
+      if (!orgMember) return;
+      setOrgId(orgMember.org_id);
+
+      const { data: integrations } = await supabase.from('integrations').select('*').eq('org_id', orgMember.org_id);
+      if (integrations) {
+        integrations.forEach(i => {
+          if (i.provider === 'whatsapp') {
+            setWaConnected(true);
+            // set other fields if needed
+          } else if (i.provider === 'zoho') {
+            setZohoConnected(true);
+            setZohoEmail(i.config?.email || "");
+          }
+        });
+      }
+    }
+    fetchIntegrationSettings();
+  }, [user]);
+
+  const saveIntegration = async (provider: string, config: any) => {
+    if (!supabase || !orgId) return;
+    const { error } = await supabase.from('integrations').upsert({
+      org_id: orgId,
+      provider,
+      config,
+      enabled: true
+    }, { onConflict: 'org_id,provider' });
+
+    if (error) {
+      toast.error(`Failed to save ${provider} settings`);
+      return false;
+    }
+    return true;
+  };
+
   const handlePbConnect = () => { if (!pbKey) { toast.error("Enter your API key first"); return; } setPbConnected(true); toast.success("PhantomBuster connected (placeholder)"); };
   const handlePbDisconnect = () => { setPbConnected(false); toast.success("Disconnected"); };
   const handlePbSync = () => { if (!pbConnected) { toast.error("Connect PhantomBuster first"); return; } setPbSyncing(true); setTimeout(() => { setPbSyncing(false); toast.success("Sync complete — 38 leads imported (mock)"); }, 2000); };
-  const handleWaConnect = () => { setWaConnected(true); toast.success("WhatsApp connected (placeholder)"); };
+  const handleWaConnect = async () => {
+    const success = await saveIntegration('whatsapp', { version: 'v1' });
+    if (success) {
+      setWaConnected(true);
+      toast.success("WhatsApp connected and saved");
+    }
+  };
   const handleWaDisconnect = () => { setWaConnected(false); toast.success("WhatsApp disconnected"); };
-  const handleZohoConnect = () => { setZohoConnected(true); toast.success("Zoho Mail config saved (placeholder)"); };
+
+  const handleZohoConnect = async () => {
+    const success = await saveIntegration('zoho', {
+      host: zohoHost,
+      port: zohoPort,
+      tls: zohoTls,
+      email: zohoEmail,
+      password: zohoPassword
+    });
+    if (success) {
+      setZohoConnected(true);
+      toast.success("Zoho Mail config saved to database");
+    }
+  };
   const handleZohoDisconnect = () => { setZohoConnected(false); toast.success("Zoho disconnected"); };
   const handleTestZoho = () => { toast.success("SMTP connection test passed (mock)"); };
 

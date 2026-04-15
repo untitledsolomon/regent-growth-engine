@@ -98,9 +98,14 @@ Deno.serve(async (req: Request) => {
 
       // Trigger Automation Engine for new lead (Fire and forget)
       try {
-        const functionUrl = Deno.env.get('SUPABASE_URL')?.replace('.supabase.co', '.functions.supabase.co');
-        if (functionUrl) {
-          fetch(`${functionUrl}/automation-engine`, {
+        const supabaseUrl = Deno.env.get('SUPABASE_URL');
+        if (supabaseUrl) {
+          // Construct the local edge function URL correctly
+          const functionUrl = supabaseUrl.includes('localhost')
+            ? `${supabaseUrl}/functions/v1/automation-engine`
+            : supabaseUrl.replace('.supabase.co', '.functions.supabase.co') + '/automation-engine';
+
+          fetch(functionUrl, {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,

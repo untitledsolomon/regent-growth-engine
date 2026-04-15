@@ -1,4 +1,5 @@
 import React from 'react';
+import { LeadCaptureForm } from './LeadCaptureForm';
 
 interface CTAButtonProps {
   client: any;
@@ -56,6 +57,3 @@ export const CTAButton: React.FC<CTAButtonProps> = ({
     </>
   );
 };
-
-// Re-export the form so it can be used standalone
-import { LeadCaptureForm } from './LeadCaptureForm';

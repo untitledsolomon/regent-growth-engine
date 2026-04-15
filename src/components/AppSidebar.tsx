@@ -3,7 +3,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { 
   LayoutDashboard, Users, Megaphone, GitBranch, BarChart3, 
   MessageSquare, Settings, ChevronLeft, ChevronRight, Plug, X,
-  ArrowRightLeft, UserCircle, Plus
+  ArrowRightLeft, UserCircle, Plus, Zap
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,7 @@ const navItems = [
   { title: "Campaigns", icon: Megaphone, to: "/campaigns" },
   { title: "Pipeline", icon: GitBranch, to: "/pipeline" },
   { title: "Messages", icon: MessageSquare, to: "/messages" },
+  { title: "Automation", icon: Zap, to: "/automation" },
   { title: "Analytics", icon: BarChart3, to: "/analytics" },
   { title: "Integrations", icon: Plug, to: "/integrations" },
 ];
