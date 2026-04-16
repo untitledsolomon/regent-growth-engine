@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LeadEngine | Premium Sign In</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-fixed-variant": "#2f2ebe",
+                    "on-tertiary-container": "#fffbff",
+                    "on-primary-container": "#fffbff",
+                    "on-error": "#ffffff",
+                    "inverse-on-surface": "#eff1f3",
+                    "on-secondary": "#ffffff",
+                    "surface-variant": "#e0e3e5",
+                    "inverse-primary": "#c0c1ff",
+                    "on-secondary-fixed-variant": "#3a485b",
+                    "primary-fixed": "#e1e0ff",
+                    "on-surface-variant": "#464554",
+                    "on-primary": "#ffffff",
+                    "on-secondary-fixed": "#0d1c2e",
+                    "tertiary-fixed-dim": "#fbabff",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-fixed": "#36003e",
+                    "surface-container-highest": "#e0e3e5",
+                    "on-error-container": "#93000a",
+                    "secondary-container": "#d5e3fc",
+                    "surface-container-high": "#e6e8ea",
+                    "on-tertiary-fixed-variant": "#7c008e",
+                    "surface-container-low": "#f2f4f6",
+                    "surface": "#f7f9fb",
+                    "on-primary-fixed": "#07006c",
+                    "secondary-fixed-dim": "#b9c7df",
+                    "surface-tint": "#494bd6",
+                    "on-background": "#191c1e",
+                    "outline-variant": "#c7c4d7",
+                    "primary": "#4648d4",
+                    "secondary-fixed": "#d5e3fc",
+                    "primary-container": "#6063ee",
+                    "outline": "#767586",
+                    "background": "#f7f9fb",
+                    "on-surface": "#191c1e",
+                    "tertiary-fixed": "#ffd6fd",
+                    "tertiary-container": "#c028d7",
+                    "primary-fixed-dim": "#c0c1ff",
+                    "error-container": "#ffdad6",
+                    "tertiary": "#9e00b5",
+                    "surface-bright": "#f7f9fb",
+                    "surface-dim": "#d8dadc",
+                    "error": "#ba1a1a",
+                    "secondary": "#515f74",
+                    "surface-container": "#eceef0",
+                    "inverse-surface": "#2d3133",
+                    "on-secondary-container": "#57657a",
+                    "on-tertiary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Plus Jakarta Sans"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .signature-gradient {
+            background: linear-gradient(135deg, #4648d4 0%, #6063ee 100%);
+        }
+        .abstract-mesh {
+            background-color: #4648d4;
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(285, 100%, 35%, 0.5) 0px, transparent 50%),
+                radial-gradient(at 50% 0%, hsla(238, 64%, 56%, 0.5) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, hsla(306, 100%, 35%, 0.5) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, hsla(238, 64%, 56%, 0.5) 0px, transparent 50%),
+                radial-gradient(at 50% 100%, hsla(285, 100%, 35%, 0.5) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, hsla(238, 64%, 56%, 0.5) 0px, transparent 50%);
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface antialiased selection:bg-primary-fixed selection:text-on-primary-fixed">
+<main class="min-h-screen flex flex-col md:flex-row overflow-hidden">
+<!-- Left Section: Abstract Illustration -->
+<section class="hidden md:flex md:w-1/2 lg:w-3/5 relative overflow-hidden abstract-mesh justify-center items-center p-24">
+<div class="relative z-10 max-w-lg">
+<h2 class="font-headline text-5xl lg:text-6xl font-extrabold text-white leading-tight tracking-tight mb-6">
+                    Connect. <br/>Grow. <br/>Convert.
+                </h2>
+<p class="text-white/80 text-xl font-body leading-relaxed mb-12">
+                    Experience the next generation of B2B lead intelligence. An intelligent canvas designed for high-velocity agency growth.
+                </p>
+<!-- Floating Decorative Stats -->
+<div class="grid grid-cols-2 gap-4">
+<div class="glass-panel p-6 rounded-xl border border-white/10 shadow-2xl">
+<span class="text-primary font-headline font-bold text-2xl">24%</span>
+<p class="text-secondary text-sm font-medium">Higher Conversion</p>
+</div>
+<div class="glass-panel p-6 rounded-xl border border-white/10 shadow-2xl translate-y-8">
+<span class="text-tertiary font-headline font-bold text-2xl">10k+</span>
+<p class="text-secondary text-sm font-medium">Active Leads</p>
+</div>
+</div>
+</div>
+<!-- Abstract Graphic Elements -->
+<div class="absolute inset-0 opacity-30 pointer-events-none">
+<div class="absolute top-1/4 -left-20 w-96 h-96 bg-tertiary-container rounded-full blur-[120px]"></div>
+<div class="absolute bottom-1/4 -right-20 w-96 h-96 bg-primary-container rounded-full blur-[120px]"></div>
+</div>
+<!-- Branding Overlay -->
+<div class="absolute bottom-12 left-12 flex items-center gap-2">
+<div class="w-8 h-8 signature-gradient rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-lg">bolt</span>
+</div>
+<span class="font-headline font-black text-xl text-white tracking-tight">LeadEngine</span>
+</div>
+</section>
+<!-- Right Section: Login Form -->
+<section class="flex-1 flex flex-col justify-center items-center p-8 lg:p-16 bg-surface-container-lowest">
+<div class="w-full max-w-md">
+<!-- Mobile Branding -->
+<div class="md:hidden flex items-center gap-2 mb-12">
+<div class="w-8 h-8 signature-gradient rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-lg">bolt</span>
+</div>
+<span class="font-headline font-black text-xl text-slate-900 tracking-tight">LeadEngine</span>
+</div>
+<div class="mb-10">
+<h1 class="font-headline text-3xl font-bold text-on-surface mb-2">Welcome Back</h1>
+<p class="text-secondary">Enter your credentials to access your dashboard</p>
+</div>
+<form class="space-y-6">
+<!-- Email Field -->
+<div class="space-y-2">
+<label class="block text-sm font-semibold text-on-surface-variant ml-1" for="email">Email Address</label>
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-xl">mail</span>
+</div>
+<input class="block w-full pl-11 pr-4 py-4 bg-surface-container-highest border-none rounded-xl text-on-surface focus:ring-2 focus:ring-primary/40 focus:bg-white transition-all duration-200 placeholder:text-outline" id="email" name="email" placeholder="name@agency.com" required="" type="email"/>
+</div>
+</div>
+<!-- Password Field -->
+<div class="space-y-2">
+<div class="flex justify-between items-center px-1">
+<label class="block text-sm font-semibold text-on-surface-variant" for="password">Password</label>
+<a class="text-sm font-medium text-primary hover:text-primary-container transition-colors" href="#">Forgot Password?</a>
+</div>
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-xl">lock</span>
+</div>
+<input class="block w-full pl-11 pr-4 py-4 bg-surface-container-highest border-none rounded-xl text-on-surface focus:ring-2 focus:ring-primary/40 focus:bg-white transition-all duration-200 placeholder:text-outline" id="password" name="password" placeholder="••••••••" required="" type="password"/>
+</div>
+</div>
+<!-- Remember Me Toggle -->
+<div class="flex items-center gap-3 px-1">
+<div class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" id="remember" type="checkbox"/>
+<div class="w-10 h-6 bg-surface-container-highest rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</div>
+<label class="text-sm font-medium text-secondary select-none" for="remember">Remember this device</label>
+</div>
+<!-- Sign In CTA -->
+<button class="w-full py-4 signature-gradient text-white font-headline font-bold rounded-xl shadow-lg shadow-primary/20 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2" type="submit">
+                        Sign In
+                        <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</form>
+<!-- Social Logins -->
+<div class="mt-10">
+<div class="relative flex items-center justify-center mb-8">
+<div class="flex-grow border-t border-outline-variant/30"></div>
+<span class="flex-shrink mx-4 text-xs font-bold text-outline tracking-widest uppercase">Or Continue With</span>
+<div class="flex-grow border-t border-outline-variant/30"></div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<button class="flex items-center justify-center gap-3 py-3 px-4 bg-white border border-outline-variant/30 rounded-xl hover:bg-surface-container-low transition-colors group">
+<img alt="Google" class="w-5 h-5" data-alt="Google colorful logo icon on white background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBV0hq9mXTtR1GXE1wHR-21tV64HQ1rSXG3YO4XWKuhBz9PTtCNHouumgVtxSXEmAzVvnAiRvDYgsZpzGUM3OjZHiqPmqOTaCE6nK9tiRmUm3zV3w25ese3rCxCsoVTiyj5NwMshauWs7FC3_oPwKi1Y8Cckoh36w0RZKJ83yiiYHcdi_sg0Geq4TwzZCW5VxZUv8rKNXygHBtKEN3YvC_eyZ_DMCDDJdmLKLP9WPVcp6ZZeazS22keG5f1ATyc55_0APVOok1wpmny"/>
+<span class="text-sm font-semibold text-secondary group-hover:text-on-surface">Google</span>
+</button>
+<button class="flex items-center justify-center gap-3 py-3 px-4 bg-white border border-outline-variant/30 rounded-xl hover:bg-surface-container-low transition-colors group">
+<img alt="LinkedIn" class="w-5 h-5" data-alt="LinkedIn blue square icon logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgCOAKiGLhvaiHbHTzaH-HCoyozVgwVMtXX-49P9baUnR0EZrBEXay2Awqt2lhhNUfhcIFQaUtCdAz4UhIhlUJUYTZuC9H3GM1F4jC72Fd3jptqmJRzbMPAOZT1b_FZ-vnG8XOyywJMKGKVYTiXFRPdyf06CI7LKh4MjNMQZLtIWPKRglSkQ6BOu05lM6oAjcAjjBk_Dyz_HzIvqjtADPPYpzTw3myVY9ogdnb1pPYyllr5dz8eqP6HSR8KGsgpca--pSWPlqp--qA"/>
+<span class="text-sm font-semibold text-secondary group-hover:text-on-surface">LinkedIn</span>
+</button>
+</div>
+</div>
+<!-- Footer Branding -->
+<div class="mt-16 text-center">
+<p class="text-sm text-outline">
+                        Powered by <span class="font-bold text-secondary">LeadEngine</span>
+</p>
+</div>
+</div>
+</section>
+</main>
+</body></html>

@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Campaigns Management | LeadFlow</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-tint": "#494bd6",
+                    "primary-container": "#6063ee",
+                    "surface-bright": "#f7f9fb",
+                    "surface-container-highest": "#e0e3e5",
+                    "on-primary-fixed-variant": "#2f2ebe",
+                    "on-tertiary-fixed": "#36003e",
+                    "background": "#f7f9fb",
+                    "secondary": "#515f74",
+                    "on-secondary": "#ffffff",
+                    "on-surface-variant": "#464554",
+                    "secondary-fixed-dim": "#b9c7df",
+                    "on-primary-fixed": "#07006c",
+                    "on-primary-container": "#fffbff",
+                    "outline": "#767586",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-container": "#d5e3fc",
+                    "surface-container-high": "#e6e8ea",
+                    "surface-container-low": "#f2f4f6",
+                    "on-primary": "#ffffff",
+                    "inverse-on-surface": "#eff1f3",
+                    "on-surface": "#191c1e",
+                    "on-error-container": "#93000a",
+                    "tertiary-fixed-dim": "#fbabff",
+                    "surface-variant": "#e0e3e5",
+                    "tertiary": "#9e00b5",
+                    "on-secondary-fixed": "#0d1c2e",
+                    "inverse-primary": "#c0c1ff",
+                    "tertiary-container": "#c028d7",
+                    "tertiary-fixed": "#ffd6fd",
+                    "surface": "#f7f9fb",
+                    "primary-fixed": "#e1e0ff",
+                    "primary-fixed-dim": "#c0c1ff",
+                    "surface-dim": "#d8dadc",
+                    "on-tertiary-fixed-variant": "#7c008e",
+                    "primary": "#4648d4",
+                    "on-background": "#191c1e",
+                    "inverse-surface": "#2d3133",
+                    "surface-container": "#eceef0",
+                    "on-error": "#ffffff",
+                    "on-secondary-fixed-variant": "#3a485b",
+                    "on-tertiary-container": "#fffbff",
+                    "on-secondary-container": "#57657a",
+                    "error-container": "#ffdad6",
+                    "on-tertiary": "#ffffff",
+                    "error": "#ba1a1a",
+                    "secondary-fixed": "#d5e3fc",
+                    "outline-variant": "#c7c4d7"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Plus Jakarta Sans"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .signature-gradient {
+            background: linear-gradient(135deg, #4648d4 0%, #6063ee 100%);
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb;
+            color: #191c1e;
+        }
+        h1, h2, h3, .brand-font {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<div class="flex h-screen overflow-hidden">
+<!-- SideNavBar Component -->
+<aside class="h-screen w-64 border-r border-slate-200/20 bg-slate-50 flex flex-col p-4 gap-2 hidden md:flex">
+<div class="mb-8 px-2 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 signature-gradient rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">bolt</span>
+</div>
+<div>
+<h1 class="font-['Plus_Jakarta_Sans'] font-extrabold text-indigo-700 text-lg leading-tight">LeadFlow Pro</h1>
+<p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Enterprise Tier</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2.5 text-slate-600 hover:text-indigo-600 transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+<span class="font-['Inter'] text-sm font-medium">Dashboard</span>
+</a>
+<!-- Active State: Acquisition (Contextually closest to Campaigns) -->
+<a class="flex items-center gap-3 px-3 py-2.5 text-indigo-700 font-semibold bg-white shadow-sm rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">person_add</span>
+<span class="font-['Inter'] text-sm">Acquisition</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-slate-600 hover:text-indigo-600 transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined text-[20px]">sync_alt</span>
+<span class="font-['Inter'] text-sm font-medium">Conversion</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-slate-600 hover:text-indigo-600 transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined text-[20px]">psychology</span>
+<span class="font-['Inter'] text-sm font-medium">Intelligence</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-slate-600 hover:text-indigo-600 transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined text-[20px]">analytics</span>
+<span class="font-['Inter'] text-sm font-medium">Reports</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-slate-600 hover:text-indigo-600 transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined text-[20px]">extension</span>
+<span class="font-['Inter'] text-sm font-medium">Integrations</span>
+</a>
+</nav>
+<div class="mt-auto flex flex-col gap-1 border-t border-slate-200/50 pt-4">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 hover:text-indigo-600 text-sm" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span>Settings</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 hover:text-indigo-600 text-sm" href="#">
+<span class="material-symbols-outlined text-[20px]">help</span>
+<span>Support</span>
+</a>
+<button class="mt-4 signature-gradient text-white rounded-xl py-3 px-4 text-sm font-semibold shadow-md active:scale-95 transition-all">
+                    Upgrade Plan
+                </button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col overflow-hidden">
+<!-- TopNavBar Component -->
+<header class="w-full sticky top-0 z-40 bg-white/80 backdrop-blur-xl flex justify-between items-center px-8 py-4 border-b border-slate-200/50">
+<div class="flex items-center gap-8 flex-1">
+<h2 class="text-xl font-['Plus_Jakarta_Sans'] font-bold bg-gradient-to-br from-indigo-600 to-violet-500 bg-clip-text text-transparent">LeadFlow</h2>
+<div class="relative w-full max-w-md hidden lg:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-slate-100/50 border-none rounded-full text-sm focus:ring-2 focus:ring-indigo-500/20 transition-all" placeholder="Search campaigns..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-500 hover:bg-slate-100 rounded-full transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-indigo-600 rounded-full border-2 border-white"></span>
+</button>
+<button class="p-2 text-slate-500 hover:bg-slate-100 rounded-full transition-colors">
+<span class="material-symbols-outlined">bolt</span>
+</button>
+<div class="h-8 w-px bg-slate-200 mx-2"></div>
+<button class="signature-gradient text-white px-5 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 active:scale-95 transition-transform shadow-lg shadow-indigo-200">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span>New Campaign</span>
+</button>
+</div>
+</header>
+<!-- Scrollable Canvas -->
+<section class="flex-1 overflow-y-auto p-8 space-y-8">
+<!-- Editorial Header -->
+<div class="flex flex-col md:flex-row justify-between items-end gap-4">
+<div class="space-y-1">
+<h1 class="text-4xl font-['Plus_Jakarta_Sans'] font-extrabold tracking-tight text-on-surface">Campaigns</h1>
+<p class="text-secondary font-medium">Manage and optimize your lead acquisition channels.</p>
+</div>
+<!-- Filters - Glassmorphism style -->
+<div class="flex items-center gap-3 bg-white/50 p-1.5 rounded-xl border border-white">
+<div class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white transition-all cursor-pointer">
+<span class="material-symbols-outlined text-[18px] text-indigo-600">filter_list</span>
+<span class="text-sm font-semibold">Channel: All</span>
+</div>
+<div class="h-4 w-px bg-slate-200"></div>
+<div class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white transition-all cursor-pointer">
+<span class="material-symbols-outlined text-[18px] text-indigo-600">calendar_today</span>
+<span class="text-sm font-semibold">Last 30 Days</span>
+</div>
+</div>
+</div>
+<!-- Bento Grid Layout for Summary Cards -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+<div class="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border-b-4 border-indigo-600/10">
+<p class="text-label text-slate-500 font-semibold text-xs uppercase tracking-wider mb-2">Total Outreach</p>
+<div class="flex items-baseline gap-2">
+<span class="text-3xl font-bold font-headline">124.5k</span>
+<span class="text-xs text-green-600 font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">trending_up</span> 12%
+                            </span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border-b-4 border-indigo-600/10">
+<p class="text-label text-slate-500 font-semibold text-xs uppercase tracking-wider mb-2">Avg. Open Rate</p>
+<div class="flex items-baseline gap-2">
+<span class="text-3xl font-bold font-headline">48.2%</span>
+<span class="text-xs text-green-600 font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">trending_up</span> 4%
+                            </span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border-b-4 border-indigo-600/10">
+<p class="text-label text-slate-500 font-semibold text-xs uppercase tracking-wider mb-2">Replied</p>
+<div class="flex items-baseline gap-2">
+<span class="text-3xl font-bold font-headline">8,432</span>
+<span class="text-xs text-red-500 font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">trending_down</span> 2%
+                            </span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border-b-4 border-tertiary/10">
+<p class="text-label text-slate-500 font-semibold text-xs uppercase tracking-wider mb-2">Conversions</p>
+<div class="flex items-baseline gap-2">
+<span class="text-3xl font-bold font-headline text-tertiary">912</span>
+<span class="text-xs text-green-600 font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">trending_up</span> 8%
+                            </span>
+</div>
+</div>
+</div>
+<!-- Campaigns High-End List (Asymmetric Layout) -->
+<div class="flex flex-col gap-4">
+<div class="flex items-center justify-between px-6 mb-2">
+<span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Active Campaigns</span>
+<div class="h-[1px] flex-1 mx-6 bg-slate-200/50"></div>
+</div>
+<!-- Campaign Item 1 -->
+<div class="bg-surface-container-lowest rounded-2xl p-6 flex flex-col lg:flex-row items-center gap-8 hover:bg-surface-container-low transition-all duration-300 group cursor-pointer shadow-[0px_10px_30px_rgba(25,28,30,0.02)]">
+<div class="flex items-center gap-4 min-w-[300px]">
+<div class="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600">
+<span class="material-symbols-outlined">alternate_email</span>
+</div>
+<div>
+<h3 class="font-bold text-lg">Q4 Enterprise Outreach</h3>
+<div class="flex items-center gap-3 mt-1">
+<span class="text-xs font-semibold px-2 py-0.5 bg-green-100 text-green-700 rounded-full">Active</span>
+<span class="text-xs text-slate-400">Email Campaign • Started Oct 12</span>
+</div>
+</div>
+</div>
+<div class="flex-1 grid grid-cols-2 md:grid-cols-4 gap-8 w-full">
+<div class="flex flex-col">
+<span class="text-[10px] text-slate-400 uppercase tracking-wider font-bold mb-1">Sent</span>
+<span class="text-lg font-bold">42,800</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] text-slate-400 uppercase tracking-wider font-bold mb-1">Opened</span>
+<span class="text-lg font-bold">24,120 <span class="text-xs font-normal text-slate-400">(56%)</span></span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] text-slate-400 uppercase tracking-wider font-bold mb-1">Replied</span>
+<span class="text-lg font-bold">1,840 <span class="text-xs font-normal text-slate-400">(4.3%)</span></span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] text-slate-400 uppercase tracking-wider font-bold mb-1">Conversion</span>
+<div class="flex items-center gap-2">
+<span class="text-lg font-bold text-indigo-600">1.2%</span>
+<div class="w-12 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+<div class="h-full bg-indigo-600 w-3/4 rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 hover:bg-slate-100 rounded-lg text-slate-400 transition-colors">
+<span class="material-symbols-outlined">pause_circle</span>
+</button>
+<button class="p-2 hover:bg-slate-100 rounded-lg text-slate-400 transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Campaign Item 2 -->
+<div class="bg-surface-container-lowest rounded-2xl p-6 flex flex-col lg:flex-row items-center gap-8 hover:bg-surface-container-low transition-all duration-300 group cursor-pointer shadow-[0px_10px_30px_rgba(25,28,30,0.02)]">
+<div class="flex items-center gap-4 min-w-[300px]">
+<div class="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center text-green-600">
+<span class="material-symbols-outlined">chat_bubble</span>
+</div>
+<div>
+<h3 class="font-bold text-lg">Re-engagement Blast</h3>
+<div class="flex items-center gap-3 mt-1">
+<span class="text-xs font-semibold px-2 py-0.5 bg-green-100 text-green-700 rounded-full">Active</span>
+<span class="text-xs text-slate-400">WhatsApp Campaign • Started Nov 01</span>
+</div>
+</div>
+</div>
+<div class="flex-1 grid grid-cols-2 md:grid-cols-4 gap-8 w-full">
+<div class="flex flex-col">
+<span class="text-[10px] text-slate-400 uppercase tracking-wider font-bold mb-1">Sent</span>
+<span class="text-lg font-bold">12,400</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] text-slate-400 uppercase tracking-wider font-bold mb-1">Opened</span>
+<span class="text-lg font-bold">11,904 <span class="text-xs font-normal text-slate-400">(96%)</span></span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] text-slate-400 uppercase tracking-wider font-bold mb-1">Replied</span>
+<span class="text-lg font-bold">2,108 <span class="text-xs font-normal text-slate-400">(17%)</span></span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] text-slate-400 uppercase tracking-wider font-bold mb-1">Conversion</span>
+<div class="flex items-center gap-2">
+<span class="text-lg font-bold text-indigo-600">4.8%</span>
+<div class="w-12 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+<div class="h-full bg-indigo-600 w-full rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 hover:bg-slate-100 rounded-lg text-slate-400 transition-colors">
+<span class="material-symbols-outlined">pause_circle</span>
+</button>
+<button class="p-2 hover:bg-slate-100 rounded-lg text-slate-400 transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</div>
+<div class="flex items-center justify-between px-6 mt-6 mb-2">
+<span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Past Campaigns</span>
+<div class="h-[1px] flex-1 mx-6 bg-slate-200/50"></div>
+</div>
+<!-- Campaign Item 3 (Completed) -->
+<div class="bg-white/40 border border-white/60 rounded-2xl p-6 flex flex-col lg:flex-row items-center gap-8 opacity-75 grayscale-[0.5] hover:opacity-100 hover:grayscale-0 transition-all duration-300 group cursor-pointer">
+<div class="flex items-center gap-4 min-w-[300px]">
+<div class="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400">
+<span class="material-symbols-outlined">alternate_email</span>
+</div>
+<div>
+<h3 class="font-bold text-lg">Spring Beta Launch</h3>
+<div class="flex items-center gap-3 mt-1">
+<span class="text-xs font-semibold px-2 py-0.5 bg-slate-200 text-slate-600 rounded-full">Completed</span>
+<span class="text-xs text-slate-400">Email Campaign • Ended Aug 15</span>
+</div>
+</div>
+</div>
+<div class="flex-1 grid grid-cols-2 md:grid-cols-4 gap-8 w-full">
+<div class="flex flex-col">
+<span class="text-[10px] text-slate-400 uppercase tracking-wider font-bold mb-1">Sent</span>
+<span class="text-lg font-bold">68,200</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] text-slate-400 uppercase tracking-wider font-bold mb-1">Opened</span>
+<span class="text-lg font-bold">31,020 <span class="text-xs font-normal text-slate-400">(45%)</span></span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] text-slate-400 uppercase tracking-wider font-bold mb-1">Replied</span>
+<span class="text-lg font-bold">452 <span class="text-xs font-normal text-slate-400">(0.6%)</span></span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] text-slate-400 uppercase tracking-wider font-bold mb-1">Conversion</span>
+<div class="flex items-center gap-2">
+<span class="text-lg font-bold text-slate-600">0.2%</span>
+<div class="w-12 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+<div class="h-full bg-slate-400 w-1/4 rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 hover:bg-slate-100 rounded-lg text-slate-400 transition-colors">
+<span class="material-symbols-outlined">restart_alt</span>
+</button>
+<button class="p-2 hover:bg-slate-100 rounded-lg text-slate-400 transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Secondary Async Section: Best Performing Channel -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-12">
+<div class="lg:col-span-2 bg-indigo-900 rounded-[2.5rem] p-10 text-white relative overflow-hidden group">
+<div class="relative z-10">
+<h2 class="text-3xl font-bold font-headline mb-4 max-w-md">WhatsApp continues to lead in response speed.</h2>
+<p class="text-indigo-200 mb-8 max-w-sm">Average reply time is 8 minutes compared to 4 hours for Email. Consider shifting budget for immediate follow-ups.</p>
+<button class="bg-white text-indigo-900 px-8 py-3 rounded-xl font-bold hover:bg-indigo-50 transition-colors active:scale-95">
+                                Optimize Budget
+                            </button>
+</div>
+<!-- Abstract Decorative Element -->
+<div class="absolute -right-20 -bottom-20 w-80 h-80 bg-indigo-500/20 rounded-full blur-3xl"></div>
+<div class="absolute right-10 top-10 flex flex-col items-center">
+<div class="w-32 h-32 rounded-full border-4 border-indigo-400/30 flex items-center justify-center">
+<span class="text-4xl font-bold font-headline">96%</span>
+</div>
+<span class="text-xs uppercase tracking-widest font-bold mt-4 text-indigo-300">Deliverability</span>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-[2.5rem] p-8 flex flex-col items-center justify-center text-center border-2 border-dashed border-slate-200">
+<div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mb-6 shadow-xl">
+<span class="material-symbols-outlined text-indigo-600 text-[32px]">auto_awesome</span>
+</div>
+<h3 class="text-xl font-bold font-headline mb-2">Auto-Pilot Suggestion</h3>
+<p class="text-sm text-slate-500 mb-6">Our AI detected 400 cold leads ready for a follow-up sequence.</p>
+<button class="w-full bg-surface-container-lowest text-on-surface py-3 rounded-xl font-bold border border-slate-200 hover:bg-white transition-all">
+                            Review Leads
+                        </button>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- Mobile Navigation -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-6 py-3 flex justify-between items-center z-50">
+<button class="flex flex-col items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[10px] font-bold">Home</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-indigo-600">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person_add</span>
+<span class="text-[10px] font-bold">Campaigns</span>
+</button>
+<button class="w-12 h-12 signature-gradient rounded-full flex items-center justify-center text-white -mt-10 shadow-lg shadow-indigo-200">
+<span class="material-symbols-outlined">add</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined">analytics</span>
+<span class="text-[10px] font-bold">Reports</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined">account_circle</span>
+<span class="text-[10px] font-bold">Profile</span>
+</button>
+</nav>
+</body></html>

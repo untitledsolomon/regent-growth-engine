@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LeadEngine | Enterprise Hub Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-lowest": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-surface-variant": "#464554",
+                        "on-primary-fixed-variant": "#2f2ebe",
+                        "tertiary-fixed-dim": "#fbabff",
+                        "primary-fixed": "#e1e0ff",
+                        "surface-bright": "#f7f9fb",
+                        "primary-container": "#6063ee",
+                        "on-primary-fixed": "#07006c",
+                        "inverse-primary": "#c0c1ff",
+                        "on-tertiary-fixed": "#36003e",
+                        "on-secondary-fixed-variant": "#3a485b",
+                        "surface-container-high": "#e6e8ea",
+                        "primary": "#4648d4",
+                        "error": "#ba1a1a",
+                        "on-secondary-container": "#57657a",
+                        "on-primary-container": "#fffbff",
+                        "on-tertiary": "#ffffff",
+                        "surface-container": "#eceef0",
+                        "outline": "#767586",
+                        "on-secondary-fixed": "#0d1c2e",
+                        "surface-container-low": "#f2f4f6",
+                        "secondary-fixed": "#d5e3fc",
+                        "surface-dim": "#d8dadc",
+                        "error-container": "#ffdad6",
+                        "surface-variant": "#e0e3e5",
+                        "on-surface": "#191c1e",
+                        "surface-container-highest": "#e0e3e5",
+                        "on-tertiary-container": "#fffbff",
+                        "outline-variant": "#c7c4d7",
+                        "surface-tint": "#494bd6",
+                        "on-error": "#ffffff",
+                        "tertiary": "#9e00b5",
+                        "secondary": "#515f74",
+                        "secondary-fixed-dim": "#b9c7df",
+                        "on-tertiary-fixed-variant": "#7c008e",
+                        "tertiary-fixed": "#ffd6fd",
+                        "background": "#f7f9fb",
+                        "on-background": "#191c1e",
+                        "tertiary-container": "#c028d7",
+                        "secondary-container": "#d5e3fc",
+                        "primary-fixed-dim": "#c0c1ff",
+                        "surface": "#f7f9fb",
+                        "on-secondary": "#ffffff",
+                        "inverse-on-surface": "#eff1f3",
+                        "on-primary": "#ffffff",
+                        "inverse-surface": "#2d3133"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, .headline { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .signature-gradient {
+            background: linear-gradient(135deg, #4648d4 0%, #6063ee 100%);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<div class="flex h-screen overflow-hidden">
+<!-- SideNavBar (Updated as per COMPONENTS_16) -->
+<aside class="fixed left-0 top-0 h-full z-40 flex flex-col justify-between py-6 border-r border-slate-200/50 dark:border-slate-800/50 bg-slate-100 dark:bg-slate-950 w-64 shrink-0">
+<div>
+<div class="px-6 mb-10 flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg signature-gradient flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-lg">rocket_launch</span>
+</div>
+<div>
+<h1 class="text-lg font-extrabold text-indigo-600 dark:text-indigo-400 tracking-tight">LeadEngine</h1>
+<p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Enterprise Hub</p>
+</div>
+</div>
+<nav class="px-4 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-indigo-600 dark:text-indigo-400 font-bold border-r-2 border-indigo-600 transition-all duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 hover:text-indigo-500 hover:bg-slate-200 dark:hover:bg-slate-800/50 transition-all duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">person_search</span>
+<span class="text-sm font-medium">Leads</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 hover:text-indigo-500 hover:bg-slate-200 dark:hover:bg-slate-800/50 transition-all duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">campaign</span>
+<span class="text-sm font-medium">Campaigns</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 hover:text-indigo-500 hover:bg-slate-200 dark:hover:bg-slate-800/50 transition-all duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">view_kanban</span>
+<span class="text-sm font-medium">Pipeline</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 hover:text-indigo-500 hover:bg-slate-200 dark:hover:bg-slate-800/50 transition-all duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">monitoring</span>
+<span class="text-sm font-medium">Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 hover:text-indigo-500 hover:bg-slate-200 dark:hover:bg-slate-800/50 transition-all duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">psychology</span>
+<span class="text-sm font-medium">AI Insights</span>
+</a>
+</nav>
+</div>
+<div class="space-y-6">
+<nav class="px-4 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 hover:text-indigo-500 hover:bg-slate-200 dark:hover:bg-slate-800/50 transition-all duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">extension</span>
+<span class="text-sm font-medium">Integrations</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 hover:text-indigo-500 hover:bg-slate-200 dark:hover:bg-slate-800/50 transition-all duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-sm font-medium">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 hover:text-indigo-500 hover:bg-slate-200 dark:hover:bg-slate-800/50 transition-all duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+<span class="text-sm font-medium">Profile</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 hover:text-indigo-500 hover:bg-slate-200 dark:hover:bg-slate-800/50 transition-all duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">sync_alt</span>
+<span class="text-sm font-medium">Switch Agency</span>
+</a>
+</nav>
+<div class="px-6">
+<button class="w-full py-3 px-4 rounded-xl signature-gradient text-white font-bold text-sm shadow-lg shadow-indigo-200/50 hover:opacity-90 active:scale-95 transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-lg">rocket</span>
+                    Convert Lead
+                </button>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 ml-64 flex flex-col overflow-y-auto">
+<!-- TopNavBar -->
+<header class="flex justify-between items-center w-full px-6 py-3 sticky top-0 z-40 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-xl docked full-width top-0 h-16">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+<input class="w-full bg-white dark:bg-slate-800 border-none rounded-full pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-indigo-400/50 transition-all outline-none" placeholder="Search leads, campaigns, or insights..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden lg:flex items-center gap-4">
+<button class="text-indigo-600 dark:text-indigo-400 font-bold text-sm hover:underline transition-colors">New Campaign</button>
+<button class="bg-primary px-4 py-2 rounded-lg text-white font-bold text-sm hover:opacity-80 transition-opacity">Add Lead</button>
+</div>
+<div class="flex items-center gap-3 pl-6 border-l border-slate-200 dark:border-slate-800">
+<button class="material-symbols-outlined text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">notifications</button>
+<button class="material-symbols-outlined text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">bolt</button>
+<button class="material-symbols-outlined text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">help</button>
+<div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden ml-2">
+<img alt="User profile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSxeCWMSEhPTy17qoXMmxSqqf1yTnhb6fdYQTknFR3YDA0M_A4L1PQp-hXRC410w3fx-VjKH_b3dlhvR8Uvh60ZK7wUOWjg_dDO2aU14x60Hth2nAANyZFi5DTCaYwTe99heLa-YlX80M6VcMy3L2lZeoI1HpBvNUu5XkgEVWwd8GsxWIb7Hho7wIZdDhMRCu_CSGJYyMBqX3iWnv1p6QufOz_CEuogdnvi0pGR3ZC7Brb75xly1DdexPkN7pwGBga0WMKAtD-8Gat"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Dashboard Content -->
+<div class="p-8 space-y-8 max-w-[1600px] mx-auto w-full">
+<!-- Quick Actions & Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<h2 class="text-3xl font-extrabold tracking-tight text-on-surface">Dashboard Overview</h2>
+<p class="text-on-surface-variant mt-1">Welcome back. Your pipeline is up by 12% this week.</p>
+</div>
+<div class="flex flex-wrap items-center gap-3">
+<button class="flex items-center gap-2 px-5 py-2.5 bg-white border border-outline-variant/10 rounded-xl font-semibold text-sm hover:bg-surface-container-high transition-colors shadow-sm">
+<span class="material-symbols-outlined text-primary">add</span> Add Lead
+                    </button>
+<button class="flex items-center gap-2 px-5 py-2.5 bg-white border border-outline-variant/10 rounded-xl font-semibold text-sm hover:bg-surface-container-high transition-colors shadow-sm">
+<span class="material-symbols-outlined text-primary">campaign</span> New Campaign
+                    </button>
+<button class="flex items-center gap-2 px-5 py-2.5 bg-white border border-outline-variant/10 rounded-xl font-semibold text-sm hover:bg-surface-container-high transition-colors shadow-sm">
+<span class="material-symbols-outlined text-primary">mail</span> Compose Message
+                    </button>
+<button class="flex items-center gap-2 px-5 py-2.5 bg-white border border-outline-variant/10 rounded-xl font-semibold text-sm hover:bg-surface-container-high transition-colors shadow-sm">
+<span class="material-symbols-outlined text-primary">file_upload</span> Import CSV
+                    </button>
+</div>
+</div>
+<!-- Stat Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+<div class="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-outline-variant/5">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined p-2 bg-indigo-50 text-indigo-600 rounded-lg">group</span>
+<span class="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded-md">+8%</span>
+</div>
+<p class="text-on-surface-variant text-xs font-medium uppercase tracking-wider">Total Leads</p>
+<p class="text-2xl font-extrabold mt-1">12,482</p>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-outline-variant/5">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined p-2 bg-blue-50 text-blue-600 rounded-lg">contact_mail</span>
+<span class="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded-md">+14%</span>
+</div>
+<p class="text-on-surface-variant text-xs font-medium uppercase tracking-wider">Contacted</p>
+<p class="text-2xl font-extrabold mt-1">8,219</p>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-outline-variant/5">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined p-2 bg-purple-50 text-purple-600 rounded-lg">forum</span>
+<span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-1 rounded-md">-2%</span>
+</div>
+<p class="text-on-surface-variant text-xs font-medium uppercase tracking-wider">Replies</p>
+<p class="text-2xl font-extrabold mt-1">1,402</p>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-outline-variant/5">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined p-2 bg-fuchsia-50 text-fuchsia-600 rounded-lg">stars</span>
+<span class="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded-md">+22%</span>
+</div>
+<p class="text-on-surface-variant text-xs font-medium uppercase tracking-wider">Conversions</p>
+<p class="text-2xl font-extrabold mt-1">342</p>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-outline-variant/5">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined p-2 bg-amber-50 text-amber-600 rounded-lg">trending_up</span>
+<span class="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded-md">+0.5%</span>
+</div>
+<p class="text-on-surface-variant text-xs font-medium uppercase tracking-wider">Conversion Rate</p>
+<p class="text-2xl font-extrabold mt-1">4.2%</p>
+</div>
+</div>
+<!-- Main Dashboard Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Performance Trend -->
+<div class="lg:col-span-8 bg-surface-container-lowest p-8 rounded-3xl border border-outline-variant/5 flex flex-col gap-6">
+<div class="flex justify-between items-center">
+<div>
+<h3 class="text-xl font-bold tracking-tight">Performance Trend</h3>
+<p class="text-sm text-on-surface-variant">Leads vs Conversions (Last 30 Days)</p>
+</div>
+<div class="flex gap-2">
+<button class="px-3 py-1 text-xs font-semibold rounded-full bg-surface-container-high">Week</button>
+<button class="px-3 py-1 text-xs font-semibold rounded-full bg-primary text-white">Month</button>
+</div>
+</div>
+<div class="relative h-[300px] w-full flex items-end justify-between px-2">
+<!-- Faux Area Chart -->
+<div class="absolute inset-0 flex items-end">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 100 100">
+<defs>
+<lineargradient id="chartGradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#4648d4" stop-opacity="0.2"></stop>
+<stop offset="100%" stop-color="#4648d4" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<path d="M0,80 Q10,70 20,75 T40,60 T60,65 T80,45 T100,50 V100 H0 Z" fill="url(#chartGradient)"></path>
+<path d="M0,80 Q10,70 20,75 T40,60 T60,65 T80,45 T100,50" fill="none" stroke="#4648d4" stroke-width="2"></path>
+<path d="M0,90 Q15,85 30,88 T50,82 T75,85 T100,78" fill="none" stroke="#9e00b5" stroke-dasharray="4" stroke-width="2"></path>
+</svg>
+</div>
+<div class="z-10 flex flex-col items-center justify-between h-full w-full py-4 opacity-50 pointer-events-none">
+<div class="w-full border-b border-dashed border-outline-variant/20"></div>
+<div class="w-full border-b border-dashed border-outline-variant/20"></div>
+<div class="w-full border-b border-dashed border-outline-variant/20"></div>
+</div>
+</div>
+<div class="flex justify-between px-4 text-xs font-medium text-on-surface-variant">
+<span>Sep 01</span><span>Sep 10</span><span>Sep 20</span><span>Sep 30</span>
+</div>
+</div>
+<!-- Funnel Overview -->
+<div class="lg:col-span-4 bg-surface-container-lowest p-8 rounded-3xl border border-outline-variant/5">
+<h3 class="text-xl font-bold tracking-tight mb-8">Funnel Overview</h3>
+<div class="space-y-6">
+<div>
+<div class="flex justify-between text-sm mb-2">
+<span class="font-medium text-on-surface-variant">Awareness</span>
+<span class="font-bold">12,482</span>
+</div>
+<div class="h-3 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[100%] rounded-full"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-sm mb-2">
+<span class="font-medium text-on-surface-variant">Interest</span>
+<span class="font-bold">8,219</span>
+</div>
+<div class="h-3 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-primary/80 w-[65%] rounded-full"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-sm mb-2">
+<span class="font-medium text-on-surface-variant">Consideration</span>
+<span class="font-bold">2,104</span>
+</div>
+<div class="h-3 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-primary/60 w-[17%] rounded-full"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-sm mb-2">
+<span class="font-medium text-on-surface-variant">Conversion</span>
+<span class="font-bold">342</span>
+</div>
+<div class="h-3 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-tertiary w-[2.7%] rounded-full"></div>
+</div>
+</div>
+</div>
+<div class="mt-8 p-4 bg-tertiary/5 rounded-2xl border border-tertiary/10">
+<p class="text-xs text-on-tertiary-fixed-variant leading-relaxed">
+<span class="font-bold">Insight:</span> Consideration to Conversion drop-off is 8% higher than industry standard. Focus on Consideration nurturing.
+                        </p>
+</div>
+</div>
+<!-- Campaign Performance -->
+<div class="lg:col-span-7 bg-surface-container-lowest p-8 rounded-3xl border border-outline-variant/5">
+<div class="flex justify-between items-center mb-8">
+<h3 class="text-xl font-bold tracking-tight">Campaign Performance</h3>
+<select class="text-xs font-semibold bg-surface border-none rounded-lg focus:ring-0">
+<option>Channel Distribution</option>
+<option>ROI Analysis</option>
+</select>
+</div>
+<div class="grid grid-cols-5 items-end gap-4 h-[240px]">
+<div class="flex flex-col items-center gap-3 group">
+<div class="w-full bg-indigo-100 rounded-xl group-hover:bg-indigo-200 transition-colors h-[60%] relative">
+<div class="absolute bottom-0 w-full h-[40%] signature-gradient rounded-xl"></div>
+</div>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">Email</span>
+</div>
+<div class="flex flex-col items-center gap-3 group">
+<div class="w-full bg-indigo-100 rounded-xl group-hover:bg-indigo-200 transition-colors h-[85%] relative">
+<div class="absolute bottom-0 w-full h-[30%] signature-gradient rounded-xl"></div>
+</div>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">LinkedIn</span>
+</div>
+<div class="flex flex-col items-center gap-3 group">
+<div class="w-full bg-indigo-100 rounded-xl group-hover:bg-indigo-200 transition-colors h-[40%] relative">
+<div class="absolute bottom-0 w-full h-[15%] signature-gradient rounded-xl"></div>
+</div>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">Google Ads</span>
+</div>
+<div class="flex flex-col items-center gap-3 group">
+<div class="w-full bg-indigo-100 rounded-xl group-hover:bg-indigo-200 transition-colors h-[70%] relative">
+<div class="absolute bottom-0 w-full h-[50%] signature-gradient rounded-xl"></div>
+</div>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">Twitter</span>
+</div>
+<div class="flex flex-col items-center gap-3 group">
+<div class="w-full bg-indigo-100 rounded-xl group-hover:bg-indigo-200 transition-colors h-[30%] relative">
+<div class="absolute bottom-0 w-full h-[10%] signature-gradient rounded-xl"></div>
+</div>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">Referral</span>
+</div>
+</div>
+</div>
+<!-- Recent Activity Feed -->
+<div class="lg:col-span-5 bg-surface-container-lowest p-8 rounded-3xl border border-outline-variant/5">
+<h3 class="text-xl font-bold tracking-tight mb-8">Recent Activity</h3>
+<div class="space-y-6">
+<div class="flex gap-4 items-start">
+<div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 shrink-0">
+<span class="material-symbols-outlined text-xl">check_circle</span>
+</div>
+<div>
+<p class="text-sm font-semibold">New Lead Converted</p>
+<p class="text-xs text-on-surface-variant">Global Logistics Corp just moved to Won</p>
+<span class="text-[10px] text-outline mt-1 block">2 mins ago</span>
+</div>
+</div>
+<div class="flex gap-4 items-start">
+<div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shrink-0">
+<span class="material-symbols-outlined text-xl">send</span>
+</div>
+<div>
+<p class="text-sm font-semibold">Message Sent</p>
+<p class="text-xs text-on-surface-variant">Automated nurturing flow started for 42 leads</p>
+<span class="text-[10px] text-outline mt-1 block">45 mins ago</span>
+</div>
+</div>
+<div class="flex gap-4 items-start">
+<div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 shrink-0">
+<span class="material-symbols-outlined text-xl">group_add</span>
+</div>
+<div>
+<p class="text-sm font-semibold">Lead Imported</p>
+<p class="text-xs text-on-surface-variant">1,240 new leads imported from Apollo.io</p>
+<span class="text-[10px] text-outline mt-1 block">2 hours ago</span>
+</div>
+</div>
+</div>
+<button class="w-full mt-8 py-3 text-sm font-bold text-primary hover:bg-primary/5 rounded-xl transition-colors">View All Activity</button>
+</div>
+<!-- AI Insights Bento Section -->
+<div class="lg:col-span-12">
+<div class="flex items-center gap-3 mb-6">
+<span class="material-symbols-outlined text-tertiary" style="font-variation-settings: 'FILL' 1;">psychology</span>
+<h3 class="text-2xl font-extrabold tracking-tight">AI Insights &amp; Predictions</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="glass-card p-8 rounded-3xl border border-tertiary/10 relative overflow-hidden group">
+<div class="absolute -right-4 -top-4 w-24 h-24 bg-red-400/10 rounded-full blur-2xl group-hover:scale-150 transition-transform"></div>
+<div class="relative z-10">
+<div class="flex items-center gap-2 mb-4">
+<span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+<span class="text-xs font-bold text-red-600 uppercase">Churn Risk</span>
+</div>
+<h4 class="text-lg font-bold mb-2">High Risk Flag: TechSolutions</h4>
+<p class="text-sm text-on-surface-variant mb-4 leading-relaxed">Engagement has dropped by 65% in the last 14 days. Probability of churn: 72%.</p>
+<button class="text-sm font-bold text-red-600 hover:underline">Launch Re-engagement Flow</button>
+</div>
+</div>
+<div class="glass-card p-8 rounded-3xl border border-indigo-400/10 relative overflow-hidden group">
+<div class="absolute -right-4 -top-4 w-24 h-24 bg-primary/10 rounded-full blur-2xl group-hover:scale-150 transition-transform"></div>
+<div class="relative z-10">
+<div class="flex items-center gap-2 mb-4">
+<span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+<span class="text-xs font-bold text-indigo-600 uppercase">Lead Expansion</span>
+</div>
+<h4 class="text-lg font-bold mb-2">Upsell Opportunity</h4>
+<p class="text-sm text-on-surface-variant mb-4 leading-relaxed">3 key accounts have recently hired new VP Sales. Ideal time for Enterprise seat upgrades.</p>
+<button class="text-sm font-bold text-indigo-600 hover:underline">Generate Pitch Deck</button>
+</div>
+</div>
+<div class="glass-card p-8 rounded-3xl border border-tertiary/10 relative overflow-hidden group">
+<div class="absolute -right-4 -top-4 w-24 h-24 bg-tertiary/10 rounded-full blur-2xl group-hover:scale-150 transition-transform"></div>
+<div class="relative z-10">
+<div class="flex items-center gap-2 mb-4">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+<span class="text-xs font-bold text-tertiary-container uppercase">Optimal Send Time</span>
+</div>
+<h4 class="text-lg font-bold mb-2">Tuesday @ 10:45 AM</h4>
+<p class="text-sm text-on-surface-variant mb-4 leading-relaxed">Analysis of 8k replies suggests this window yields 40% higher response rates for SaaS leads.</p>
+<button class="text-sm font-bold text-tertiary hover:underline">Apply to Campaigns</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="mt-auto px-8 py-6 flex justify-between items-center text-[10px] font-bold text-outline uppercase tracking-[0.2em]">
+<span>LeadEngine v4.2.0-stable</span>
+<div class="flex gap-6">
+<a class="hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="hover:text-primary transition-colors" href="#">Support Hub</a>
+</div>
+</footer>
+</main>
+</div>
+<!-- Floating Action Button -->
+<button class="fixed bottom-8 right-8 w-14 h-14 rounded-full signature-gradient text-white shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-transform z-50">
+<span class="material-symbols-outlined text-3xl">magic_button</span>
+</button>
+</body></html>
