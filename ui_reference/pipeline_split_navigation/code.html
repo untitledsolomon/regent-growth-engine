@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LeadEngine | Pipeline Management</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-lowest": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-surface-variant": "#464554",
+                        "on-primary-fixed-variant": "#2f2ebe",
+                        "tertiary-fixed-dim": "#fbabff",
+                        "primary-fixed": "#e1e0ff",
+                        "surface-bright": "#f7f9fb",
+                        "primary-container": "#6063ee",
+                        "on-primary-fixed": "#07006c",
+                        "inverse-primary": "#c0c1ff",
+                        "on-tertiary-fixed": "#36003e",
+                        "on-secondary-fixed-variant": "#3a485b",
+                        "surface-container-high": "#e6e8ea",
+                        "primary": "#4648d4",
+                        "error": "#ba1a1a",
+                        "on-secondary-container": "#57657a",
+                        "on-primary-container": "#fffbff",
+                        "on-tertiary": "#ffffff",
+                        "surface-container": "#eceef0",
+                        "outline": "#767586",
+                        "on-secondary-fixed": "#0d1c2e",
+                        "surface-container-low": "#f2f4f6",
+                        "secondary-fixed": "#d5e3fc",
+                        "surface-dim": "#d8dadc",
+                        "error-container": "#ffdad6",
+                        "surface-variant": "#e0e3e5",
+                        "on-surface": "#191c1e",
+                        "surface-container-highest": "#e0e3e5",
+                        "on-tertiary-container": "#fffbff",
+                        "outline-variant": "#c7c4d7",
+                        "surface-tint": "#494bd6",
+                        "on-error": "#ffffff",
+                        "tertiary": "#9e00b5",
+                        "secondary": "#515f74",
+                        "secondary-fixed-dim": "#b9c7df",
+                        "on-tertiary-fixed-variant": "#7c008e",
+                        "tertiary-fixed": "#ffd6fd",
+                        "background": "#f7f9fb",
+                        "on-background": "#191c1e",
+                        "tertiary-container": "#c028d7",
+                        "secondary-container": "#d5e3fc",
+                        "primary-fixed-dim": "#c0c1ff",
+                        "surface": "#f7f9fb",
+                        "on-secondary": "#ffffff",
+                        "inverse-on-surface": "#eff1f3",
+                        "on-primary": "#ffffff",
+                        "inverse-surface": "#2d3133"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, .font-headline { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .signature-gradient {
+            background: linear-gradient(135deg, #4648d4 0%, #6063ee 100%);
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex overflow-hidden font-body">
+<!-- SideNavBar (Updated to split layout from COMPONENTS_16) -->
+<aside class="fixed left-0 top-0 h-full z-40 flex flex-col justify-between py-6 w-64 bg-slate-100 dark:bg-slate-950 border-r border-slate-200/50 dark:border-slate-800/50 shrink-0">
+<div class="flex flex-col">
+<div class="px-6 mb-8 flex items-center gap-3">
+<div class="w-8 h-8 signature-gradient rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-sm">rocket_launch</span>
+</div>
+<div>
+<h1 class="text-lg font-extrabold text-indigo-600 dark:text-indigo-400 tracking-tight">LeadCanvas</h1>
+<p class="text-[10px] text-slate-500 uppercase tracking-widest font-light">Premium Leads Management</p>
+</div>
+</div>
+<nav class="flex-1 px-4 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 text-sm font-light hover:text-indigo-500 hover:bg-slate-200 dark:hover:bg-slate-800/50 hover:translate-x-1 transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">dashboard</span> <span class="font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 text-sm font-light hover:text-indigo-500 hover:bg-slate-200 dark:hover:bg-slate-800/50 hover:translate-x-1 transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">person_search</span> <span class="font-medium">Leads</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 text-sm font-light hover:text-indigo-500 hover:bg-slate-200 dark:hover:bg-slate-800/50 hover:translate-x-1 transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">campaign</span> <span class="font-medium">Campaigns</span>
+</a>
+<!-- ACTIVE: Pipeline -->
+<a class="flex items-center gap-3 px-3 py-2 text-indigo-600 dark:text-indigo-400 text-sm font-bold border-r-2 border-indigo-600 bg-white dark:bg-slate-900 transition-all duration-200 rounded-l-lg" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">view_kanban</span> <span class="font-bold">Pipeline</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 text-sm font-light hover:text-indigo-500 hover:bg-slate-200 dark:hover:bg-slate-800/50 hover:translate-x-1 transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">monitoring</span> <span class="font-medium">Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 text-sm font-light hover:text-indigo-500 hover:bg-slate-200 dark:hover:bg-slate-800/50 hover:translate-x-1 transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">psychology</span> <span class="font-medium">AI Insights</span>
+</a>
+</nav>
+</div>
+<!-- Footer Section of SideNavBar -->
+<div class="px-4 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 text-sm font-light hover:text-indigo-500 hover:bg-slate-200 dark:hover:bg-slate-800/50 hover:translate-x-1 transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">extension</span> <span class="font-medium">Integrations</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 text-sm font-light hover:text-indigo-500 hover:bg-slate-200 dark:hover:bg-slate-800/50 hover:translate-x-1 transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">settings</span> <span class="font-medium">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 text-sm font-light hover:text-indigo-500 hover:bg-slate-200 dark:hover:bg-slate-800/50 hover:translate-x-1 transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">account_circle</span> <span class="font-medium">Profile</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 text-sm font-light hover:text-indigo-500 hover:bg-slate-200 dark:hover:bg-slate-800/50 hover:translate-x-1 transition-all duration-200 rounded-lg mb-4" href="#">
+<span class="material-symbols-outlined">sync_alt</span> <span class="font-medium">Switch Agency</span>
+</a>
+<button class="w-full bg-tertiary text-white py-2.5 rounded-xl font-semibold flex items-center justify-center gap-2 active:scale-95 transition-all duration-150">
+<span class="material-symbols-outlined text-sm">bolt</span> Convert Lead
+        </button>
+</div>
+</aside>
+<!-- Main Content Area (Adjusted for fixed sidebar width) -->
+<main class="flex-1 flex flex-col min-w-0 ml-64">
+<!-- TopNavBar Shell -->
+<header class="flex justify-between items-center w-full px-8 sticky top-0 z-40 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md h-16">
+<div class="flex items-center flex-1 max-w-xl">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">search</span>
+<input class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-full py-2 pl-11 pr-4 text-sm focus:ring-2 focus:ring-primary/40 transition-all font-body" placeholder="Search leads, companies, or tasks..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4 ml-6">
+<button class="flex items-center gap-2 px-4 py-2 border-2 border-outline-variant/15 text-slate-600 dark:text-slate-300 rounded-xl text-sm font-semibold hover:bg-slate-100 transition-colors">
+                New Campaign
+            </button>
+<button class="flex items-center gap-2 px-4 py-2 signature-gradient text-white rounded-xl text-sm font-semibold hover:opacity-90 transition-opacity">
+                Add Lead
+            </button>
+<div class="h-6 w-px bg-slate-200 dark:bg-slate-800 mx-2"></div>
+<div class="flex items-center gap-3">
+<button class="p-2 text-slate-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">upload_file</span>
+</button>
+<button class="p-2 text-slate-500 hover:text-primary transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="ml-2">
+<img class="w-8 h-8 rounded-full border-2 border-white shadow-sm" data-alt="close-up portrait of a professional businessman in a sleek office environment, soft cinematic lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4UOMfbBRV1KJX54rjaAImupRt9qpZyw5KxtzU6gACfQlAHyOM-_7ImzwC3ihJmbEGImXd12cd-RQTX6qOz4BCflyZrrJiiAc7hb9u1LzBg_ih6WPCppqkayM6YfLMD58i7WgvbIzaOPLWXvk0hMTZAJVtzOQd6fpU1-VBoie_wJ3FQKfXb12QehwoLqXn94hc0Rtht7NCO58g7KmLnT-H1j-VewVDyx85FTCvJh7GUyq46AjEWzUu9hS6VIm4uaI0hHTpHNCek6og"/>
+</button>
+</div>
+</div>
+</header>
+<!-- Canvas Area -->
+<div class="flex-1 overflow-x-auto bg-surface-container p-8">
+<!-- Contextual Toolbar -->
+<div class="flex items-end justify-between mb-8">
+<div>
+<h2 class="text-3xl font-bold tracking-tight text-on-surface mb-1 font-headline">Sales Pipeline</h2>
+<p class="text-on-surface-variant text-sm">Managing 142 active deals across 6 stages.</p>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex -space-x-2">
+<img class="w-8 h-8 rounded-full border-2 border-white ring-2 ring-transparent hover:ring-primary transition-all" data-alt="professional woman headshot with bright natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkRRYpDR7MgKO68GX9mE9gzt8VqI4X4muEmrcya9PZb7aiC3NFImH-f8z1K1NggGRcPBEvM8ol0TRWmqX-A8ibb1tT_cj1PelKcxkbZwsOULff4-zKjwEdF2UAjrV-g_uSpBaZwrBkG3mYkARG1UOVDl0TQC17NeVrqvB7MgesnDFLeCamU14JKfogPOMDlGL8zCz3BILKXy53A3ihuHt7rTEHk7WXb0poveUUy13mqw5CYTWyByShzztw-rnHU243j29OJgIk99pX"/>
+<img class="w-8 h-8 rounded-full border-2 border-white ring-2 ring-transparent hover:ring-primary transition-all" data-alt="portrait of a focused male software developer in casual studio setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB76eH9Dr-gNTHAafhKdwVgDk_fFJG_tA-ho8aQuqVWjQ0lkpXz6dBqbp8L4pTgAf9whFeh5fhtzhWF4t6oqkbbFLuGZcqWYy8crpEO0raOY5fHKfR9HQ8Hcy_JvJ5KkekRIFCNGR7V1rblu8UIoEjWdaFoXhcM1OWHufn-nCMhUleIvmcAmI5K6XsHLbqIqVR-uY3Es_CK03iOTL-j6Vtxm6-xJA8E_YQoGxgaa8xA_BGtL1tKuZMEvGPFGPQFPUj4vsBgYmxqF8re"/>
+<img class="w-8 h-8 rounded-full border-2 border-white ring-2 ring-transparent hover:ring-primary transition-all" data-alt="minimalist studio portrait of a business professional" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDN7OvlAdULAJsgll8g6tFAOuSRf2RyxVRxMQ2c3N5bLFTqAXDeI1K5G_6zGQ9vmEaisJPYU2i_GV9uhnuvpmFNK9nWBjAJ3wYQAa4cRhgzBtfYgWuW2GDjvxObpVDvvUUZrpLWtjWzu42QhAFXyZYuBYcy95e-MKaWvyXpNl60HHzMHhOaKrnWuIO6AmhKbn2sYK0b7DPTDyXTupb1rSCn2XYodx65S1XIIfxonQp8ozvcEfKD-kixWvObaXRUhfXHc6Li6dLgM2vT"/>
+<div class="w-8 h-8 rounded-full bg-surface-container-high border-2 border-white flex items-center justify-center text-[10px] font-bold text-on-surface-variant">+8</div>
+</div>
+<button class="bg-surface-container-lowest p-2 rounded-xl text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">filter_list</span>
+</button>
+<button class="bg-surface-container-lowest p-2 rounded-xl text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">calendar_today</span>
+</button>
+</div>
+</div>
+<!-- Kanban Grid -->
+<div class="flex gap-6 min-h-[calc(100vh-16rem)] overflow-y-hidden">
+<!-- New Leads -->
+<div class="flex flex-col w-72 shrink-0 group">
+<div class="flex items-center justify-between px-3 mb-4">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<h3 class="text-sm font-bold uppercase tracking-wider text-on-surface">New</h3>
+<span class="text-xs font-medium text-on-surface-variant bg-surface-container-high px-1.5 rounded">12</span>
+</div>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity"><span class="material-symbols-outlined text-sm text-on-surface-variant">more_horiz</span></button>
+</div>
+<div class="flex-1 space-y-4">
+<!-- Lead Card -->
+<div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-grab active:cursor-grabbing border border-transparent hover:border-primary/20 group/card relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-primary opacity-0 group-hover/card:opacity-100 transition-opacity"></div>
+<div class="flex justify-between items-start mb-2">
+<span class="bg-secondary-container text-on-secondary-container text-[10px] font-bold px-2 py-0.5 rounded-full">INBOUND</span>
+<span class="material-symbols-outlined text-sm text-slate-300">drag_indicator</span>
+</div>
+<h4 class="font-bold text-on-surface text-sm mb-0.5">Alex Thompson</h4>
+<p class="text-xs text-on-surface-variant mb-4">Nexus Digital Inc.</p>
+<div class="flex items-center justify-between mt-auto">
+<p class="text-sm font-bold text-primary">$12,400</p>
+<div class="flex items-center gap-1 text-[10px] text-on-surface-variant font-medium">
+<span class="material-symbols-outlined text-[14px]">schedule</span> 2h
+                            </div>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-grab active:cursor-grabbing border border-transparent group/card">
+<div class="flex justify-between items-start mb-2">
+<span class="bg-tertiary-fixed text-on-tertiary-fixed text-[10px] font-bold px-2 py-0.5 rounded-full">PRIORITY</span>
+<span class="material-symbols-outlined text-sm text-slate-300">drag_indicator</span>
+</div>
+<h4 class="font-bold text-on-surface text-sm mb-0.5">Sarah Miller</h4>
+<p class="text-xs text-on-surface-variant mb-4">CloudStratus Tech</p>
+<div class="flex items-center justify-between mt-auto">
+<p class="text-sm font-bold text-primary">$45,000</p>
+<div class="flex items-center gap-1 text-[10px] text-on-surface-variant font-medium">
+<span class="material-symbols-outlined text-[14px]">schedule</span> 5h
+                            </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Contacted -->
+<div class="flex flex-col w-72 shrink-0 group">
+<div class="flex items-center justify-between px-3 mb-4">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-amber-400"></span>
+<h3 class="text-sm font-bold uppercase tracking-wider text-on-surface">Contacted</h3>
+<span class="text-xs font-medium text-on-surface-variant bg-surface-container-high px-1.5 rounded">8</span>
+</div>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity"><span class="material-symbols-outlined text-sm text-on-surface-variant">more_horiz</span></button>
+</div>
+<div class="flex-1 space-y-4">
+<div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-grab border border-transparent">
+<div class="flex justify-between items-start mb-2">
+<span class="bg-secondary-container text-on-secondary-container text-[10px] font-bold px-2 py-0.5 rounded-full">FOLLOW UP</span>
+<span class="material-symbols-outlined text-sm text-slate-300">drag_indicator</span>
+</div>
+<h4 class="font-bold text-on-surface text-sm mb-0.5">Julian Black</h4>
+<p class="text-xs text-on-surface-variant mb-4">MetaLogistics</p>
+<div class="flex items-center justify-between mt-auto">
+<p class="text-sm font-bold text-primary">$8,900</p>
+<img class="w-5 h-5 rounded-full" data-alt="avatar of a focused sales professional" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJKOR44BUDhxlBAKSelanv9cFhJw36PfToN9EBTKeHXV68xrRfsH0m8gLGm4ulaHN-ztWSm1Uu3SNAse_Gg2ap6oMfUdWnPkpcFAOboZKzZ3VRapAGCzrZSv4If5mG8uyqmNWE0gBQYF_StJk9gOdVF4AF__WlxqQLmrlK3PXlzCNcLNpOqELfK4JRQeEFKIaWYbEOUOTOp_jdgHxBYhlTo1JgBO83oK8TIEBtshvDaYZvfsJNDPHefGVM2xR-X8uOgb7RsRptGq7f"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Qualified -->
+<div class="flex flex-col w-72 shrink-0 group">
+<div class="flex items-center justify-between px-3 mb-4">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+<h3 class="text-sm font-bold uppercase tracking-wider text-on-surface">Qualified</h3>
+<span class="text-xs font-medium text-on-surface-variant bg-surface-container-high px-1.5 rounded">24</span>
+</div>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity"><span class="material-symbols-outlined text-sm text-on-surface-variant">more_horiz</span></button>
+</div>
+<div class="flex-1 space-y-4">
+<div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-grab border border-transparent">
+<div class="flex justify-between items-start mb-2">
+<span class="bg-tertiary-fixed text-on-tertiary-fixed text-[10px] font-bold px-2 py-0.5 rounded-full">HIGH VALUE</span>
+<span class="material-symbols-outlined text-sm text-slate-300">drag_indicator</span>
+</div>
+<h4 class="font-bold text-on-surface text-sm mb-0.5">David Chen</h4>
+<p class="text-xs text-on-surface-variant mb-4">Solaris Global</p>
+<div class="flex items-center justify-between mt-auto">
+<p class="text-sm font-bold text-primary">$120,000</p>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px] text-green-500">trending_up</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Proposal -->
+<div class="flex flex-col w-72 shrink-0 group">
+<div class="flex items-center justify-between px-3 mb-4">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-purple-500"></span>
+<h3 class="text-sm font-bold uppercase tracking-wider text-on-surface">Proposal</h3>
+<span class="text-xs font-medium text-on-surface-variant bg-surface-container-high px-1.5 rounded">5</span>
+</div>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity"><span class="material-symbols-outlined text-sm text-on-surface-variant">more_horiz</span></button>
+</div>
+<div class="flex-1 space-y-4">
+<div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm hover:shadow-md border-2 border-primary/10 border-dashed bg-primary/[0.02]">
+<div class="flex justify-center items-center h-24 text-primary/40">
+<span class="material-symbols-outlined text-3xl">add_circle</span>
+</div>
+<p class="text-center text-[10px] font-bold text-primary uppercase tracking-tighter">Draft New Proposal</p>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-grab border border-transparent">
+<div class="flex justify-between items-start mb-2">
+<span class="bg-secondary-container text-on-secondary-container text-[10px] font-bold px-2 py-0.5 rounded-full">PENDING REVIEW</span>
+<span class="material-symbols-outlined text-sm text-slate-300">drag_indicator</span>
+</div>
+<h4 class="font-bold text-on-surface text-sm mb-0.5">Elena Rodriguez</h4>
+<p class="text-xs text-on-surface-variant mb-4">Vortex Media Group</p>
+<div class="flex items-center justify-between mt-auto">
+<p class="text-sm font-bold text-primary">$32,500</p>
+<div class="flex items-center gap-1 text-[10px] text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px]">attach_file</span> 3
+                            </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Negotiation -->
+<div class="flex flex-col w-72 shrink-0 group">
+<div class="flex items-center justify-between px-3 mb-4">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-orange-500"></span>
+<h3 class="text-sm font-bold uppercase tracking-wider text-on-surface">Negotiation</h3>
+<span class="text-xs font-medium text-on-surface-variant bg-surface-container-high px-1.5 rounded">3</span>
+</div>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity"><span class="material-symbols-outlined text-sm text-on-surface-variant">more_horiz</span></button>
+</div>
+<div class="flex-1 space-y-4">
+<div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-grab border border-transparent">
+<div class="flex justify-between items-start mb-2">
+<span class="bg-error-container text-on-error-container text-[10px] font-bold px-2 py-0.5 rounded-full">URGENT</span>
+<span class="material-symbols-outlined text-sm text-slate-300">drag_indicator</span>
+</div>
+<h4 class="font-bold text-on-surface text-sm mb-0.5">Michael Song</h4>
+<p class="text-xs text-on-surface-variant mb-4">Titan Logistics</p>
+<div class="flex items-center justify-between mt-auto">
+<p class="text-sm font-bold text-primary">$67,200</p>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px] text-error" style="font-variation-settings: 'FILL' 1;">priority_high</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Closed Won -->
+<div class="flex flex-col w-72 shrink-0 group">
+<div class="flex items-center justify-between px-3 mb-4">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+<h3 class="text-sm font-bold uppercase tracking-wider text-on-surface">Closed Won</h3>
+<span class="text-xs font-medium text-on-surface-variant bg-surface-container-high px-1.5 rounded">91</span>
+</div>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity"><span class="material-symbols-outlined text-sm text-on-surface-variant">more_horiz</span></button>
+</div>
+<div class="flex-1 space-y-4">
+<div class="bg-emerald-50/50 p-4 rounded-xl border border-emerald-100 opacity-80">
+<div class="flex justify-between items-start mb-2">
+<span class="bg-emerald-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">WIN</span>
+<span class="material-symbols-outlined text-sm text-emerald-300">verified</span>
+</div>
+<h4 class="font-bold text-slate-700 text-sm mb-0.5">Samantha Reed</h4>
+<p class="text-xs text-slate-500 mb-4">Omni-Solutions Co.</p>
+<p class="text-sm font-bold text-emerald-600">$12,000</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Side Intelligence Panel (Asymmetric Layout component) -->
+<aside class="w-80 bg-white dark:bg-slate-950 border-l border-outline-variant/10 p-6 hidden xl:block overflow-y-auto">
+<h3 class="text-lg font-bold font-headline mb-6">Pipeline Insights</h3>
+<div class="space-y-6">
+<!-- AI Recommendation Card -->
+<div class="signature-gradient p-4 rounded-2xl text-white">
+<div class="flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">psychology</span>
+<span class="text-xs font-bold uppercase tracking-widest">AI Prediction</span>
+</div>
+<p class="text-sm font-medium leading-relaxed mb-4">Michael Song's deal is 85% likely to close this week if you schedule a follow-up call today.</p>
+<button class="w-full py-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-xl text-xs font-bold transition-colors">
+                Draft Outreach
+            </button>
+</div>
+<!-- Stats Mini-Grid -->
+<div class="grid grid-cols-2 gap-3">
+<div class="bg-surface-container-low p-4 rounded-2xl">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase mb-1">Win Rate</p>
+<p class="text-xl font-bold text-on-surface">64%</p>
+<p class="text-[10px] text-emerald-500 flex items-center gap-0.5 mt-1">
+<span class="material-symbols-outlined text-xs">arrow_upward</span> 12%
+                </p>
+</div>
+<div class="bg-surface-container-low p-4 rounded-2xl">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase mb-1">Avg. Cycle</p>
+<p class="text-xl font-bold text-on-surface">18d</p>
+<p class="text-[10px] text-error flex items-center gap-0.5 mt-1">
+<span class="material-symbols-outlined text-xs">arrow_downward</span> 2d
+                </p>
+</div>
+</div>
+<!-- Activity Feed -->
+<div>
+<h4 class="text-sm font-bold mb-4 flex items-center justify-between">
+                Recent Activity
+                <span class="text-[10px] text-primary cursor-pointer">View All</span>
+</h4>
+<div class="space-y-4">
+<div class="flex gap-3">
+<div class="w-2 h-2 rounded-full bg-emerald-500 mt-2 shrink-0"></div>
+<div>
+<p class="text-xs text-on-surface"><strong>Julian Black</strong> was moved to <strong>Contacted</strong></p>
+<p class="text-[10px] text-on-surface-variant mt-0.5">22 minutes ago</p>
+</div>
+</div>
+<div class="flex gap-3">
+<div class="w-2 h-2 rounded-full bg-primary mt-2 shrink-0"></div>
+<div>
+<p class="text-xs text-on-surface"><strong>New Lead</strong>: Alex Thompson (Inbound)</p>
+<p class="text-[10px] text-on-surface-variant mt-0.5">2 hours ago</p>
+</div>
+</div>
+<div class="flex gap-3">
+<div class="w-2 h-2 rounded-full bg-tertiary mt-2 shrink-0"></div>
+<div>
+<p class="text-xs text-on-surface"><strong>David Chen</strong> viewed the proposal</p>
+<p class="text-[10px] text-on-surface-variant mt-0.5">5 hours ago</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Task List -->
+<div class="bg-surface-container-low p-4 rounded-2xl">
+<h4 class="text-sm font-bold mb-3">Overdue Tasks</h4>
+<div class="space-y-3">
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary" type="checkbox"/>
+<span class="text-xs text-on-surface group-hover:text-primary transition-colors">Call MetaLogistics CEO</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary" type="checkbox"/>
+<span class="text-xs text-on-surface group-hover:text-primary transition-colors">Send ROI report to Solaris</span>
+</label>
+</div>
+</div>
+</div>
+</aside>
+</body></html>

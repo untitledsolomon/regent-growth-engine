@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-tint": "#494bd6",
+                    "primary-container": "#6063ee",
+                    "surface-bright": "#f7f9fb",
+                    "surface-container-highest": "#e0e3e5",
+                    "on-primary-fixed-variant": "#2f2ebe",
+                    "on-tertiary-fixed": "#36003e",
+                    "background": "#f7f9fb",
+                    "secondary": "#515f74",
+                    "on-secondary": "#ffffff",
+                    "on-surface-variant": "#464554",
+                    "secondary-fixed-dim": "#b9c7df",
+                    "on-primary-fixed": "#07006c",
+                    "on-primary-container": "#fffbff",
+                    "outline": "#767586",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-container": "#d5e3fc",
+                    "surface-container-high": "#e6e8ea",
+                    "surface-container-low": "#f2f4f6",
+                    "on-primary": "#ffffff",
+                    "inverse-on-surface": "#eff1f3",
+                    "on-surface": "#191c1e",
+                    "on-error-container": "#93000a",
+                    "tertiary-fixed-dim": "#fbabff",
+                    "surface-variant": "#e0e3e5",
+                    "tertiary": "#9e00b5",
+                    "on-secondary-fixed": "#0d1c2e",
+                    "inverse-primary": "#c0c1ff",
+                    "tertiary-container": "#c028d7",
+                    "tertiary-fixed": "#ffd6fd",
+                    "surface": "#f7f9fb",
+                    "primary-fixed": "#e1e0ff",
+                    "primary-fixed-dim": "#c0c1ff",
+                    "surface-dim": "#d8dadc",
+                    "on-tertiary-fixed-variant": "#7c008e",
+                    "primary": "#4648d4",
+                    "on-background": "#191c1e",
+                    "inverse-surface": "#2d3133",
+                    "surface-container": "#eceef0",
+                    "on-error": "#ffffff",
+                    "on-secondary-fixed-variant": "#3a485b",
+                    "on-tertiary-container": "#fffbff",
+                    "on-secondary-container": "#57657a",
+                    "error-container": "#ffdad6",
+                    "on-tertiary": "#ffffff",
+                    "error": "#ba1a1a",
+                    "secondary-fixed": "#d5e3fc",
+                    "outline-variant": "#c7c4d7"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Plus Jakarta Sans"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .signature-gradient {
+        background: linear-gradient(135deg, #4648d4 0%, #6063ee 100%);
+      }
+      .glass-card {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(20px);
+      }
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body antialiased">
+<div class="flex min-h-screen">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 border-r border-slate-200/20 sticky top-0 bg-slate-50 flex flex-col p-4 gap-2 hidden md:flex">
+<div class="px-2 mb-8">
+<h1 class="font-headline font-extrabold text-primary text-2xl tracking-tight">LeadFlow Pro</h1>
+<p class="text-xs text-secondary font-medium uppercase tracking-widest mt-1">Enterprise Tier</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:text-primary hover:translate-x-1 transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:text-primary hover:translate-x-1 transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined" data-icon="person_add">person_add</span>
+<span class="font-medium">Acquisition</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:text-primary hover:translate-x-1 transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined" data-icon="sync_alt">sync_alt</span>
+<span class="font-medium">Conversion</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:text-primary hover:translate-x-1 transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+<span class="font-medium">Intelligence</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:text-primary hover:translate-x-1 transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-medium">Reports</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-primary font-semibold bg-white shadow-sm rounded-lg group" href="#">
+<span class="material-symbols-outlined" data-icon="extension" style="font-variation-settings: 'FILL' 1;">extension</span>
+<span class="font-medium">Integrations</span>
+</a>
+</nav>
+<div class="mt-auto space-y-1 pt-4 border-t border-slate-200/50">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:text-primary transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-medium">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:text-primary transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-medium">Support</span>
+</a>
+<div class="mt-4 p-4 rounded-xl bg-primary-fixed/30 border border-primary-fixed">
+<p class="text-xs font-bold text-on-primary-fixed-variant mb-2">PRO PLAN</p>
+<p class="text-xs text-on-surface-variant mb-3 leading-relaxed">Unlock advanced lead scoring &amp; AI automation.</p>
+<button class="w-full py-2 bg-primary text-on-primary text-xs font-bold rounded-lg active:scale-95 transition-all">Upgrade Plan</button>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 min-w-0 bg-surface overflow-y-auto">
+<!-- TopAppBar -->
+<header class="w-full sticky top-0 z-40 bg-white/80 backdrop-blur-xl flex justify-between items-center px-8 py-4 border-b border-slate-200/50">
+<div class="flex items-center gap-8">
+<h2 class="font-headline text-xl font-bold bg-gradient-to-br from-primary to-primary-container bg-clip-text text-transparent">Integrations</h2>
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm" data-icon="search">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-full text-sm w-64 focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Search marketplace..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-500 hover:bg-slate-100 rounded-full transition-colors active:scale-95 duration-150">
+<span class="material-symbols-outlined" data-icon="bolt">bolt</span>
+</button>
+<button class="p-2 text-slate-500 hover:bg-slate-100 rounded-full transition-colors relative active:scale-95 duration-150">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-tertiary rounded-full border-2 border-white"></span>
+</button>
+<div class="h-8 w-[1px] bg-slate-200 mx-2"></div>
+<div class="flex items-center gap-3">
+<span class="text-sm font-semibold text-on-surface">Agency One</span>
+<div class="w-10 h-10 rounded-full bg-slate-200 overflow-hidden">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="close-up portrait of a professional man in a tailored suit with a confident smile against a minimalist studio background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJ7w4gsrJSJi69KccnDZzNl-R__X5C-0orVvw1PSf-200QElXljnr82ajXvNJcMvVJzKrYa7mXfLk6dlnsmyPVAv3MPKHWnuAIGXnUIkrA08dMRq1vv5IyBjGDAt8Jv7iEPb23u5PidU09y22j70mNS3U2HWWcijlTqSWSi-dTr5BJ9tPpC6gKw1QytY6xgC0S3RgjzEdFYuMlH2kojbBX9Os-6Qb6z1sFFq0LKAU5qN3R4RQAry33UwQRn3AO92MTkOUZ2Ld42Ic2"/>
+</div>
+</div>
+</div>
+</header>
+<div class="px-8 py-10 max-w-7xl mx-auto">
+<!-- Hero Section -->
+<section class="mb-12">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+<div class="lg:col-span-7">
+<h3 class="font-headline text-4xl lg:text-5xl font-extrabold text-on-surface tracking-tight mb-4">Extend your <span class="text-primary">workflow</span> power</h3>
+<p class="text-lg text-secondary max-w-xl leading-relaxed">Connect LeadFlow Pro with the tools your team already uses. Seamlessly sync leads, automate follow-ups, and track conversions across your entire stack.</p>
+<div class="flex flex-wrap gap-3 mt-8">
+<span class="px-4 py-2 bg-surface-container-lowest shadow-sm rounded-full text-xs font-semibold text-secondary flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                                    150+ Native Integrations
+                                </span>
+<span class="px-4 py-2 bg-surface-container-lowest shadow-sm rounded-full text-xs font-semibold text-secondary flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="bolt" style="font-variation-settings: 'FILL' 1;">bolt</span>
+                                    Zero-Code Setup
+                                </span>
+</div>
+</div>
+<div class="lg:col-span-5 hidden lg:block">
+<div class="relative w-full aspect-square bg-surface-container rounded-3xl overflow-hidden p-6">
+<div class="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent"></div>
+<img class="w-full h-full object-cover rounded-2xl shadow-2xl" data-alt="abstract composition of digital data visualization nodes connecting with glowing purple and blue lines on a dark sophisticated background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDEVVBCHpgNYa-IlFw__9ACHStUbc0lSPejg3ut0KYKxdANyuuJtyFxKWs_eSoA1ieMx4uZ_u9xznqf2wyBPfkwnAP_cvt5DEmALeRyBK68ZYR1bWHG6JTjTAKV_DKwxCwpwLJ1MLDV5ekSP3kLCogfJQ64AcQ-kXbtJ_fW1o_YI1epOkXS0BeFs4EthyYKvvt7xggStvX5uNNuj0IOvK3SdWz4PdB0w1iHnKKXX54wEhv-y5YBHVkDVrLmo9rCybSht8GI5M0v3Jg_"/>
+</div>
+</div>
+</div>
+</section>
+<!-- Filter Row -->
+<div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+<div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+<button class="px-6 py-2.5 signature-gradient text-on-primary rounded-full text-sm font-bold shadow-lg shadow-primary/20">All Apps</button>
+<button class="px-6 py-2.5 bg-surface-container-lowest hover:bg-surface-container-high transition-colors text-secondary rounded-full text-sm font-semibold">CRM</button>
+<button class="px-6 py-2.5 bg-surface-container-lowest hover:bg-surface-container-high transition-colors text-secondary rounded-full text-sm font-semibold">Social</button>
+<button class="px-6 py-2.5 bg-surface-container-lowest hover:bg-surface-container-high transition-colors text-secondary rounded-full text-sm font-semibold">Communication</button>
+<button class="px-6 py-2.5 bg-surface-container-lowest hover:bg-surface-container-high transition-colors text-secondary rounded-full text-sm font-semibold">Analytics</button>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-xs font-bold text-slate-400 uppercase tracking-widest mr-2">Sort by:</span>
+<select class="bg-transparent border-none text-sm font-bold text-on-surface focus:ring-0 cursor-pointer">
+<option>Most Popular</option>
+<option>Newest</option>
+<option>Alphabetical</option>
+</select>
+</div>
+</div>
+<!-- Bento Grid Marketplace -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+<!-- Salesforce Card -->
+<div class="group bg-surface-container-lowest p-6 rounded-2xl border border-transparent hover:border-primary/20 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300">
+<div class="flex justify-between items-start mb-6">
+<div class="w-14 h-14 rounded-xl bg-blue-50 flex items-center justify-center p-3">
+<span class="material-symbols-outlined text-3xl text-blue-500" data-icon="cloud">cloud</span>
+</div>
+<span class="px-3 py-1 bg-secondary-container text-on-secondary-container text-[10px] font-bold uppercase tracking-wider rounded-md">Connected</span>
+</div>
+<h4 class="font-headline text-lg font-bold mb-2">Salesforce</h4>
+<p class="text-sm text-secondary line-clamp-2 mb-6">Sync your leads directly to the world's #1 CRM. Keep pipelines updated in real-time.</p>
+<div class="flex items-center justify-between pt-4 border-t border-slate-100">
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full border-2 border-white bg-slate-200"></div>
+<div class="w-6 h-6 rounded-full border-2 border-white bg-slate-300"></div>
+</div>
+<button class="text-sm font-bold text-primary hover:text-primary-container transition-colors">Configure</button>
+</div>
+</div>
+<!-- HubSpot Card -->
+<div class="group bg-surface-container-lowest p-6 rounded-2xl border border-transparent hover:border-primary/20 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300">
+<div class="flex justify-between items-start mb-6">
+<div class="w-14 h-14 rounded-xl bg-orange-50 flex items-center justify-center p-3">
+<span class="material-symbols-outlined text-3xl text-orange-500" data-icon="hub">hub</span>
+</div>
+</div>
+<h4 class="font-headline text-lg font-bold mb-2">HubSpot</h4>
+<p class="text-sm text-secondary line-clamp-2 mb-6">Automate lead nurturing and marketing sequences with powerful HubSpot sync.</p>
+<div class="flex items-center justify-between pt-4 border-t border-slate-100">
+<span class="text-[10px] font-bold text-slate-400 uppercase">CRM Category</span>
+<button class="px-5 py-2 bg-surface-container-high hover:bg-surface-container-highest rounded-lg text-sm font-bold text-on-surface transition-all active:scale-95">Connect</button>
+</div>
+</div>
+<!-- LinkedIn Card -->
+<div class="group bg-surface-container-lowest p-6 rounded-2xl border border-transparent hover:border-primary/20 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300">
+<div class="flex justify-between items-start mb-6">
+<div class="w-14 h-14 rounded-xl bg-sky-50 flex items-center justify-center p-3">
+<span class="material-symbols-outlined text-3xl text-sky-600" data-icon="share">share</span>
+</div>
+<span class="px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed-variant text-[10px] font-bold uppercase tracking-wider rounded-md">New</span>
+</div>
+<h4 class="font-headline text-lg font-bold mb-2">LinkedIn</h4>
+<p class="text-sm text-secondary line-clamp-2 mb-6">Extract lead data from Sales Navigator and sync direct message threads automatically.</p>
+<div class="flex items-center justify-between pt-4 border-t border-slate-100">
+<span class="text-[10px] font-bold text-slate-400 uppercase">Social Category</span>
+<button class="px-5 py-2 bg-surface-container-high hover:bg-surface-container-highest rounded-lg text-sm font-bold text-on-surface transition-all active:scale-95">Connect</button>
+</div>
+</div>
+<!-- Slack Card -->
+<div class="group bg-surface-container-lowest p-6 rounded-2xl border border-transparent hover:border-primary/20 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300">
+<div class="flex justify-between items-start mb-6">
+<div class="w-14 h-14 rounded-xl bg-purple-50 flex items-center justify-center p-3">
+<span class="material-symbols-outlined text-3xl text-purple-600" data-icon="forum">forum</span>
+</div>
+<span class="px-3 py-1 bg-secondary-container text-on-secondary-container text-[10px] font-bold uppercase tracking-wider rounded-md">Connected</span>
+</div>
+<h4 class="font-headline text-lg font-bold mb-2">Slack</h4>
+<p class="text-sm text-secondary line-clamp-2 mb-6">Get instant notifications in your channels when a high-value lead is identified.</p>
+<div class="flex items-center justify-between pt-4 border-t border-slate-100">
+<div class="flex items-center gap-2 text-xs text-secondary">
+<span class="w-2 h-2 bg-green-500 rounded-full"></span> Active
+                            </div>
+<button class="text-sm font-bold text-primary hover:text-primary-container transition-colors">Configure</button>
+</div>
+</div>
+<!-- WhatsApp Card -->
+<div class="group bg-surface-container-lowest p-6 rounded-2xl border border-transparent hover:border-primary/20 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300">
+<div class="flex justify-between items-start mb-6">
+<div class="w-14 h-14 rounded-xl bg-green-50 flex items-center justify-center p-3">
+<span class="material-symbols-outlined text-3xl text-green-600" data-icon="chat_bubble">chat_bubble</span>
+</div>
+</div>
+<h4 class="font-headline text-lg font-bold mb-2">WhatsApp Business</h4>
+<p class="text-sm text-secondary line-clamp-2 mb-6">Send automated reminders and engage with leads directly via WhatsApp API.</p>
+<div class="flex items-center justify-between pt-4 border-t border-slate-100">
+<span class="text-[10px] font-bold text-slate-400 uppercase">Communication</span>
+<button class="px-5 py-2 bg-surface-container-high hover:bg-surface-container-highest rounded-lg text-sm font-bold text-on-surface transition-all active:scale-95">Connect</button>
+</div>
+</div>
+<!-- Zapier Card -->
+<div class="group bg-surface-container-lowest p-6 rounded-2xl border border-transparent hover:border-primary/20 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300">
+<div class="flex justify-between items-start mb-6">
+<div class="w-14 h-14 rounded-xl bg-orange-100 flex items-center justify-center p-3">
+<span class="material-symbols-outlined text-3xl text-orange-600" data-icon="bolt">bolt</span>
+</div>
+</div>
+<h4 class="font-headline text-lg font-bold mb-2">Zapier</h4>
+<p class="text-sm text-secondary line-clamp-2 mb-6">The ultimate connector. Bridge LeadFlow with over 5,000+ other web applications.</p>
+<div class="flex items-center justify-between pt-4 border-t border-slate-100">
+<span class="text-[10px] font-bold text-slate-400 uppercase">Automation</span>
+<button class="px-5 py-2 bg-surface-container-high hover:bg-surface-container-highest rounded-lg text-sm font-bold text-on-surface transition-all active:scale-95">Connect</button>
+</div>
+</div>
+</div>
+<!-- Asymmetric Bottom Banner -->
+<div class="mt-16 bg-inverse-surface rounded-3xl p-1 w-full overflow-hidden">
+<div class="bg-gradient-to-br from-slate-900 to-indigo-950 p-12 relative">
+<div class="absolute right-0 top-0 w-1/2 h-full opacity-10 pointer-events-none">
+<img class="w-full h-full object-cover" data-alt="close up of glowing electronic circuit board with neon blue and pink lights representing high tech connectivity and data flow" src="https://lh3.googleusercontent.com/aida-public/AB6AXuByELvoEzRJHlBQeTQSowmptC6pTuljSrxUKNz17v28arhZyBefzUk9tzeJCGSxeNY6Ovoibb4y-vMKVbor8qRue9lpTlh08vFspS3ooHPUwAsbrL4s0-2vDhOXAW1_3hL6n4PbqQj-vdijU4Y4d8i_6eP8CxZ-yvJ4YOs0CMhTbNXywWotKg6BrJFg7fbbg5pKIdFKtsvLtTXPGkAB6ph41TJ1IHxrKJQShg3akSuYrIUVJA46NUG9v612y72fLff5WhrWutR5LPCe"/>
+</div>
+<div class="max-w-2xl relative z-10">
+<h4 class="font-headline text-3xl font-bold text-white mb-4">Can't find what you need?</h4>
+<p class="text-slate-400 text-lg mb-8">Our developer platform allows you to build custom integrations or use our robust API to connect any proprietary system.</p>
+<div class="flex gap-4">
+<button class="px-8 py-4 signature-gradient text-white font-bold rounded-xl active:scale-95 transition-all">View API Docs</button>
+<button class="px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl active:scale-95 transition-all backdrop-blur-sm">Contact Partnership</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Mobile Navigation Shell -->
+<div class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-slate-200 px-6 py-3 flex justify-between items-center shadow-2xl">
+<button class="flex flex-col items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined text-2xl" data-icon="dashboard">dashboard</span>
+<span class="text-[10px] font-bold">Dash</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined text-2xl" data-icon="sync_alt">sync_alt</span>
+<span class="text-[10px] font-bold">Flow</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-2xl" data-icon="extension" style="font-variation-settings: 'FILL' 1;">extension</span>
+<span class="text-[10px] font-bold">Apps</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined text-2xl" data-icon="analytics">analytics</span>
+<span class="text-[10px] font-bold">Reports</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined text-2xl" data-icon="account_circle">account_circle</span>
+<span class="text-[10px] font-bold">Profile</span>
+</button>
+</div>
+</body></html>
