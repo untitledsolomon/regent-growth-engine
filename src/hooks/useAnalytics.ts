@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { dailyMetrics, sourceBreakdown, funnelData, campaigns } from '@/data/mockData';
+import { dailyMetrics as mockDailyMetrics, sourceBreakdown as mockSourceBreakdown, funnelData as mockFunnelData, campaigns as mockCampaigns } from '@/data/mockData';
 
 export function useAnalytics() {
   const [data, setData] = useState<any>({
-    dailyMetrics,
-    sourceBreakdown,
-    funnelData,
-    campaigns
+    dailyMetrics: mockDailyMetrics,
+    sourceBreakdown: mockSourceBreakdown,
+    funnelData: mockFunnelData,
+    campaigns: mockCampaigns
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -22,32 +22,28 @@ export function useAnalytics() {
         const { data: result, error: fetchErr } = await supabase.functions.invoke('analytics');
         if (fetchErr) throw fetchErr;
 
-        // Map the API result to the dashboard's expected data structure
-        // If API returns null or error, keep mock data
         if (result) {
           setData({
-            ...data,
             totalLeads: result.total_leads,
             contactedCount: result.contacted,
             repliesCount: result.total_replied,
             conversionsCount: result.total_conversions,
             conversionRate: result.conversion_rate,
             funnelData: [
-              { label: 'Total Leads', value: result.total_leads, color: 'bg-primary' },
-              { label: 'Contacted', value: result.contacted, color: 'bg-blue-400' },
-              { label: 'Replied', value: result.total_replied, color: 'bg-emerald-400' },
-              { label: 'Interested', value: result.interested, color: 'bg-amber-400' },
-              { label: 'Closed', value: result.closed, color: 'bg-emerald-600' },
+              { stage: 'Total Leads', value: result.total_leads, fill: '#4648d4' },
+              { stage: 'Contacted', value: result.contacted, fill: '#6063ee' },
+              { stage: 'Replied', value: result.total_replied, fill: '#9e00b5' },
+              { stage: 'Interested', value: result.interested, fill: '#c028d7' },
+              { stage: 'Conversion', value: result.total_conversions, fill: '#10b981' },
             ],
-            sourceBreakdown: Object.entries(result.leads_by_source || {}).map(([name, value]) => ({
-              name,
-              value,
-              color: name === 'PhantomBuster' ? '#6366f1' : name === 'LinkedIn' ? '#3b82f6' : '#10b981'
+            sourceBreakdown: Object.entries(result.leads_by_source || {}).map(([source, count]) => ({
+              source,
+              count,
+              percentage: result.total_leads > 0 ? Math.round((count as number / result.total_leads) * 100) : 0
             })),
             recentLeads: result.recent_leads,
-            // Still using mock for dailyMetrics as the API doesn't provide time-series yet
-            dailyMetrics,
-            campaigns: result.total_campaigns > 0 ? [] : campaigns, // Simplified logic for now
+            dailyMetrics: result.daily_metrics?.length ? result.daily_metrics : mockDailyMetrics,
+            campaigns: mockCampaigns, // Keep mock for now or fetch from DB
           });
         }
       } catch (e: any) {

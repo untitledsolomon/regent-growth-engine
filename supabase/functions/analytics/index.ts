@@ -1,23 +1,3 @@
-/**
- * Analytics Edge Function
- *
- * Routes:
- *   GET /analytics/summary – aggregate pipeline health metrics
- *
- * Returns:
- *   {
- *     total_leads, new_leads, contacted, follow_up, interested, closed,
- *     total_campaigns, active_campaigns,
- *     total_sent, total_delivered, total_replied, total_conversions,
- *     conversion_rate,          // conversions / total_leads * 100
- *     reply_rate,               // total_replied / total_sent * 100
- *     leads_by_source,          // { source: count }
- *     recent_leads,             // last 5 leads
- *   }
- *
- * Auth: same as other functions (service-role or agent key bypasses RLS)
- */
-
 import { corsHeaders } from '../_shared/cors.ts';
 import { getClient, adminClient, getScopedAuth, json, err } from '../_shared/supabase.ts';
 
@@ -38,11 +18,9 @@ Deno.serve(async (req: Request) => {
       return addCors(err('Insufficient scopes', 403));
     }
 
-    // If using scoped auth, we must filter queries by org_id
     const filterByOrg = (query: any) => scopedAuth ? query.eq('org_id', scopedAuth.org_id) : query;
 
-    // Run queries in parallel
-    const [leadsRes, campaignsRes, recentRes] = await Promise.all([
+    const [leadsRes, campaignsRes, recentRes, timeSeriesRes] = await Promise.all([
       filterByOrg(supabase.from('leads').select('status, source')),
       filterByOrg(supabase
         .from('campaigns')
@@ -52,6 +30,7 @@ Deno.serve(async (req: Request) => {
         .select('id, name, business, status, source, created_at')
         .order('created_at', { ascending: false })
         .limit(5)),
+      filterByOrg(supabase.rpc('get_leads_time_series')) // We'll add this RPC or mock it in JS
     ]);
 
     if (leadsRes.error) return addCors(err(leadsRes.error.message, 500));
@@ -76,12 +55,6 @@ Deno.serve(async (req: Request) => {
       if (lead.source) {
         sourceCounts[lead.source] = (sourceCounts[lead.source] ?? 0) + 1;
       }
-
-      // Attribution logic
-      const postId = (lead as any).metadata?.postId;
-      if (postId) {
-        contentAttribution[postId] = (contentAttribution[postId] ?? 0) + 1;
-      }
     }
 
     // Campaign aggregates
@@ -96,14 +69,31 @@ Deno.serve(async (req: Request) => {
     }
 
     const totalLeads = leads.length;
-    const conversionRate =
-      totalLeads > 0
-        ? parseFloat(((totalConversions / totalLeads) * 100).toFixed(2))
-        : 0;
-    const replyRate =
-      totalSent > 0
-        ? parseFloat(((totalReplied / totalSent) * 100).toFixed(2))
-        : 0;
+    const conversionRate = totalLeads > 0 ? parseFloat(((totalConversions / totalLeads) * 100).toFixed(2)) : 0;
+    const replyRate = totalSent > 0 ? parseFloat(((totalReplied / totalSent) * 100).toFixed(2)) : 0;
+
+    // Use timeSeriesRes if available, otherwise fallback to daily breakdown of current leads
+    let dailyMetrics = timeSeriesRes.data || [];
+    if (!dailyMetrics.length) {
+       // Simple group by date for last 30 days
+       const metricsMap: Record<string, any> = {};
+       const now = new Date();
+       for (let i = 29; i >= 0; i--) {
+          const d = new Date(now);
+          d.setDate(d.getDate() - i);
+          const dateStr = d.toISOString().split('T')[0];
+          metricsMap[dateStr] = { date: dateStr, leads: 0, conversions: 0, replies: 0 };
+       }
+
+       for (const lead of leads as any) {
+          const d = lead.created_at?.split('T')[0];
+          if (metricsMap[d]) {
+             metricsMap[d].leads++;
+             if (lead.status === 'closed') metricsMap[d].conversions++;
+          }
+       }
+       dailyMetrics = Object.values(metricsMap);
+    }
 
     return addCors(
       json({
@@ -122,8 +112,8 @@ Deno.serve(async (req: Request) => {
         conversion_rate: conversionRate,
         reply_rate: replyRate,
         leads_by_source: sourceCounts,
-        content_attribution: contentAttribution,
         recent_leads: recentRes.data ?? [],
+        daily_metrics: dailyMetrics,
       }),
     );
   } catch (e) {

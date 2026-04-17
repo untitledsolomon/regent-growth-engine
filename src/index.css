@@ -1,8 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
 
 @layer base {
   :root {
@@ -122,5 +122,15 @@
   }
   .font-display {
     font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  }
+  .signature-gradient {
+    background: linear-gradient(135deg, #4648d4 0%, #6063ee 100%);
+  }
+  .glass-card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px);
+  }
+  .border-l-3 {
+    border-left-width: 3px;
   }
 }
